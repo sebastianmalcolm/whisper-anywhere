@@ -1,3 +1,16 @@
+// === Time stamp snippet === // See documetation of this entire file after the snippet.
+// This snippet is updated by Auto Time Stamp vscode extension (v0.0.8). Don't touch it. It must be the first lines in the file (see extension's settings for details) 
+debugTimestamp="2023/09/25 16:32:12";
+console.log("My Whisper started! Last modified on: " + debugTimestamp);
+// Settings we used (%appdata%\Code\User\settings.json)
+// {
+//     "window.zoomLevel": -1,
+//     "lpubsppop01.autoTimeStamp.modifiedTimeStart": "^debugTimestamp",
+//     "lpubsppop01.autoTimeStamp.filenamePattern": "^(?!.*[/\\\\]settings.json$)",
+//     "lpubsppop01.autoTimeStamp.luxonFormat": "=\"yyyy/LL/dd HH:mm:ss\";"
+// }
+// === End of time stamp snippet ===
+
 /* global chrome */
 const SVG_MIC_HTML =
     '<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 512 512" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1" height="1.2em" width="1.2em" style="margin-left:0.2em;" xmlns="http://www.w3.org/2000/svg"> <line x1="192" y1="448" x2="320" y2="448" style="fill:none;stroke:#8e8ea0;stroke-linecap:square;stroke-miterlimit:10;stroke-width:48px"></line> <path d="M384,208v32c0,70.4-57.6,128-128,128h0c-70.4,0-128-57.6-128-128V208" style="fill:none;stroke:#8e8ea0;stroke-linecap:square;stroke-miterlimit:10;stroke-width:48px"></path> <line x1="256" y1="368" x2="256" y2="448" style="fill:none;stroke:#8e8ea0;stroke-linecap:square;stroke-miterlimit:10;stroke-width:48px"></line> <path d="M256,320a78.83,78.83,0,0,1-56.55-24.1A80.89,80.89,0,0,1,176,239V128a79.69,79.69,0,0,1,80-80c44.86,0,80,35.14,80,80V239C336,283.66,300.11,320,256,320Z" style="fill:none;stroke:#8e8ea0;stroke-linecap:square;stroke-miterlimit:10;stroke-width:48px"></path></svg>';
@@ -34,22 +47,25 @@ class AudioRecorder {
     }
 
     async listenForKeyboardShortcut() {
+        console.log('listenForKeyboardShortcut');
         if (await this.shortcutEnabled()) {
             const shortcutFirstKey = await retrieveFromStorage('config_shortcut_first_key');
             const shortcutFirstModifier = await retrieveFromStorage('config_shortcut_first_modifier');
             const shortcutSecondModifier = await retrieveFromStorage('config_shortcut_second_modifier');
             // console.log({ shortcutFirstKey, shortcutFirstModifier, shortcutSecondModifier });
-            document.addEventListener('keydown', (event) => {
+            window.addEventListener('keydown', (event) => {
+                console.log("event.code", event.code);
                 if (event.code === `Key${shortcutFirstKey.toUpperCase()}`) {
                     if (shortcutFirstModifier && shortcutFirstModifier !== 'none' && !event[shortcutFirstModifier]) return;
                     if (shortcutSecondModifier && shortcutSecondModifier !== 'none' && !event[shortcutSecondModifier]) return;
 
                     event.preventDefault();
-
+                    console.log('shortcut pressed');
                     // const firstModLogStr = shortcutFirstModifier && shortcutFirstModifier !== 'none' ? `${shortcutFirstModifier}+` : '';
                     // const secondModLogStr = shortcutSecondModifier && shortcutSecondModifier !== 'none' ? `${shortcutSecondModifier}+` : '';
                     // console.log(`shortcut ${firstModLogStr}${secondModLogStr}${shortcutFirstKey} pressed`);
-
+                    this.toggleRecording();
+                    /*
                     // recognize the main textarea button by the textarea having the data-id attribute and the sibling microphone button
                     const textarea = document.querySelector('textarea[data-id]');
                     if (textarea) {
@@ -59,7 +75,8 @@ class AudioRecorder {
                         }
                     }
                 }
-            });
+            },
+            true); // true: useCapture
         }
     }
 
@@ -206,7 +223,61 @@ class AudioRecorder {
         }
     }
 
+    pasteAtCaret() {
+        console.log('pasteAtCaret');
+        // Get the active element
+        let activeElement = document.activeElement;
+
+
+
+        // Check if the active element is content-editable or a textarea
+        if (activeElement.isContentEditable || activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT') {
+
+            // Read from the clipboard
+            navigator.clipboard.readText()
+                .then(text => {
+                    // If it's a textarea or an input field
+                    if (typeof activeElement.selectionStart === 'number') {
+                        let startPos = activeElement.selectionStart;
+                        let endPos = activeElement.selectionEnd;
+                        let value = activeElement.value;
+
+                        activeElement.value = value.slice(0, startPos) + text + value.slice(endPos);
+
+                        // Move the caret to the end of the inserted text
+                        activeElement.selectionStart = startPos + text.length;
+                        activeElement.selectionEnd = startPos + text.length;
+                    }
+                    // If it's a content-editable element
+                    else if (document.getSelection) {
+                        let sel = document.getSelection();
+                        if (sel.rangeCount) {
+                            let range = sel.getRangeAt(0);
+                            range.deleteContents();
+
+                            let textNode = document.createTextNode(text);
+                            range.insertNode(textNode);
+
+                            // Move the caret to the end of the inserted text
+                            range.setStartAfter(textNode);
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to read clipboard contents: ', err);
+                });
+        }
+        else {
+            console.error('The active element must be a textarea or a content-editable element');
+        }
+
+        console.log('pasteAtCaret end');
+    }
+
     async startRecording() {
+        console.log('startRecording');
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             this.mediaRecorder = new MediaRecorder(stream);
@@ -214,7 +285,7 @@ class AudioRecorder {
             this.mediaRecorder.addEventListener('dataavailable', (event) => chunks.push(event.data));
 
             this.mediaRecorder.addEventListener('stop', async () => {
-                this.setButtonState('loading');
+                //                this.setButtonState('loading');
                 // console.log('recording stop');
                 const audioBlob = new Blob(chunks, { type: 'audio/webm' });
 
@@ -246,13 +317,25 @@ class AudioRecorder {
                 const requestUrl = (await this.translationEnabled()) ? TRANSLATION_URL : TRANSCRIPTION_URL;
 
                 const response = await fetch(requestUrl, requestOptions);
-                this.setButtonState('ready');
+                //                this.setButtonState('ready');
                 if (response.status === 200) {
                     const result = await response.json();
                     const resultText = result.text;
                     console.log(resultText);
 
-                    this.insertTextResult(resultText);
+                    try {
+                        await navigator.clipboard.writeText(resultText);
+                        console.log('Text successfully copied to clipboard: ' + resultText);
+                    } catch (err) {
+                        console.error('Unable to write to clipboard. Error:', err);
+                    }
+                    // log active element tag name
+                    console.log('activeElement', document.activeElement.tagName);
+
+                    this.pasteAtCaret();
+
+
+                    //this.insertTextResult(resultText);
                     this.recording = false;
                     stream.getTracks().forEach((track) => track.stop());
                 } else {
@@ -264,7 +347,7 @@ class AudioRecorder {
                 }
             });
             this.mediaRecorder.start();
-            this.setButtonState('recording');
+            //            this.setButtonState('recording');
             this.recording = true;
         } catch (error) {
             console.error(error);
@@ -272,8 +355,9 @@ class AudioRecorder {
     }
 
     stopRecording() {
+        console.log('stopRecording');
         this.mediaRecorder.stop();
-        this.micButton.innerHTML = SVG_MIC_HTML;
+        //        this.micButton.innerHTML = SVG_MIC_HTML;
         this.recording = false;
     }
 
@@ -321,7 +405,9 @@ async function init() {
     if (TESTING) {
         chrome.storage.sync.clear();
     }
-
+    const recorder = new AudioRecorder();
+    await recorder.listenForKeyboardShortcut();
+    /*
     const textareas = document.querySelectorAll('textarea');
 
     textareas.forEach(async (textarea) => {
@@ -346,7 +432,6 @@ async function init() {
         subtree: true,
     });
 
-    document.addEventListener('click', handleClick);
 }
 
 function downloadFile(file) {
@@ -386,6 +471,7 @@ function addMicButtonToTextareas() {
     });
 }
 
+let shortcutListenerRegistered = false;
 function handleMutations(mutations) {
     mutations.forEach((mutation) => {
         // console.log(mutation);
@@ -394,6 +480,38 @@ function handleMutations(mutations) {
             // console.log('path changed');
             previousPathname = window.location.pathname;
 
+            console.log('path changed: ' + window.location.pathname);
+
+
+            document.addEventListener('keydown', (event) => {
+                console.log("event.code", event.code);
+                if (event.code === `Key${shortcutFirstKey.toUpperCase()}`) {
+                    if (shortcutFirstModifier && shortcutFirstModifier !== 'none' && !event[shortcutFirstModifier]) return;
+                    if (shortcutSecondModifier && shortcutSecondModifier !== 'none' && !event[shortcutSecondModifier]) return;
+
+                    event.preventDefault();
+                    console.log('shortcut pressed');
+                    // const firstModLogStr = shortcutFirstModifier && shortcutFirstModifier !== 'none' ? `${shortcutFirstModifier}+` : '';
+                    // const secondModLogStr = shortcutSecondModifier && shortcutSecondModifier !== 'none' ? `${shortcutSecondModifier}+` : '';
+                    // console.log(`shortcut ${firstModLogStr}${secondModLogStr}${shortcutFirstKey} pressed`);
+                    recorder.toggleRecording();
+
+
+
+                    /*
+                    // recognize the main textarea button by the textarea having the data-id attribute and the sibling microphone button
+                    const textarea = document.querySelector('textarea[data-id]');
+                    if (textarea) {
+                        const micButton = textarea.parentNode.querySelector('.microphone_button');
+                        if (micButton) {
+                            micButton.click();
+                        }
+                    }
+                    */
+                }
+            });
+
+            /*
             addMicButtonToTextareas();
             // backup crutch
             if (timeout1Id) clearTimeout(timeout1Id);

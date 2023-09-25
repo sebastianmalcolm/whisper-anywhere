@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Whisper to ChatGPT",
+    "name": "Whisper-Paste",
     "version": "1.2.7",
     "icons": {
         "16": "icon16.png",
@@ -11,7 +11,7 @@
     "description": "Prompt with your voice to ChatGPT in your Chrome browser using Whisper API with a button click.",
     "content_scripts": [
         {
-            "matches": ["https://chat.openai.com/*"],
+            "matches": ["<all_urls>"],
             "js": ["content.js"],
             "css": ["content.css"],
             "run_at": "document_idle",
@@ -25,5 +25,5 @@
         "default_icon": "icon128.png",
         "default_popup": "index.html"
     },
-    "permissions": ["storage"]
+    "permissions": ["storage", "<all_urls>"]
 }
