@@ -2,8 +2,8 @@
 
 Just click ctrl+alt+r to start/stop recording and the extension will use OpenAI Whisper API to transcribe your voice, copy the transcription to clipboard and paste it at the current caret position. 🎉
 
-This repository is a fork of https://github.com/Ordinath/Whisper_to_ChatGPT
-I don't know much about web development, and I've spent only a couple of hours on this extension, so it might still be a little buggy and slow, but mostly it works!
+This repository is a fork of https://github.com/Ordinath/Whisper_to_ChatGPT  
+I don't know much about web development, and I've spent only a few hours on this extension, so it might still be a little buggy and slow, but mostly it works!
 
 ## ✨ Features
 
