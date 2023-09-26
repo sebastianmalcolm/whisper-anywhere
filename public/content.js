@@ -1,6 +1,6 @@
 // === Time stamp snippet === // See documetation of this entire file after the snippet.
 // This snippet is updated by Auto Time Stamp vscode extension (v0.0.8). Don't touch it. It must be the first lines in the file (see extension's settings for details) 
-debugTimestamp="2023/09/25 16:32:12";
+debugTimestamp="2023/09/26 17:13:32";
 console.log("My Whisper started! Last modified on: " + debugTimestamp);
 // Settings we used (%appdata%\Code\User\settings.json)
 // {
@@ -54,13 +54,13 @@ class AudioRecorder {
             const shortcutSecondModifier = await retrieveFromStorage('config_shortcut_second_modifier');
             // console.log({ shortcutFirstKey, shortcutFirstModifier, shortcutSecondModifier });
             window.addEventListener('keydown', (event) => {
-                console.log("event.code", event.code);
+                // console.log("event.code", event.code);
                 if (event.code === `Key${shortcutFirstKey.toUpperCase()}`) {
                     if (shortcutFirstModifier && shortcutFirstModifier !== 'none' && !event[shortcutFirstModifier]) return;
                     if (shortcutSecondModifier && shortcutSecondModifier !== 'none' && !event[shortcutSecondModifier]) return;
 
                     event.preventDefault();
-                    console.log('shortcut pressed');
+                    // console.log('shortcut pressed');
                     // const firstModLogStr = shortcutFirstModifier && shortcutFirstModifier !== 'none' ? `${shortcutFirstModifier}+` : '';
                     // const secondModLogStr = shortcutSecondModifier && shortcutSecondModifier !== 'none' ? `${shortcutSecondModifier}+` : '';
                     // console.log(`shortcut ${firstModLogStr}${secondModLogStr}${shortcutFirstKey} pressed`);
@@ -74,6 +74,7 @@ class AudioRecorder {
                             micButton.click();
                         }
                     }
+                    */
                 }
             },
             true); // true: useCapture
@@ -224,7 +225,7 @@ class AudioRecorder {
     }
 
     pasteAtCaret() {
-        console.log('pasteAtCaret');
+        console.log('pasteAtCaret called');
         // Get the active element
         let activeElement = document.activeElement;
 
@@ -431,6 +432,7 @@ async function init() {
         childList: true,
         subtree: true,
     });
+    */
 
 }
 
@@ -484,7 +486,7 @@ function handleMutations(mutations) {
 
 
             document.addEventListener('keydown', (event) => {
-                console.log("event.code", event.code);
+                // console.log("event.code", event.code);
                 if (event.code === `Key${shortcutFirstKey.toUpperCase()}`) {
                     if (shortcutFirstModifier && shortcutFirstModifier !== 'none' && !event[shortcutFirstModifier]) return;
                     if (shortcutSecondModifier && shortcutSecondModifier !== 'none' && !event[shortcutSecondModifier]) return;
@@ -526,6 +528,7 @@ function handleMutations(mutations) {
             timeout3Id = setTimeout(() => {
                 addMicButtonToTextareas();
             }, 1000);
+            */
         }
     });
 }
