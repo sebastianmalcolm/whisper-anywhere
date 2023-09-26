@@ -1,34 +1,33 @@
-## 🎙️ Voice-to-Text ChatGPT: Transcribe with Whisper API 🚀
+## Voice-to-Text (almost) anywhere in Chrome using OpenAI Whisper API and the clipboard 🚀
 
-Elevate your ChatGPT experience with [Voice-to-Text ChatGPT chrome extension](https://chrome.google.com/webstore/detail/whisper-to-chatgpt/jdmppbmnffdfhjlddebcelhigiomacfl?hl=ru&authuser=0)! Seamlessly record your voice and transcribe it using OpenAI's Whisper API - all within your Chrome browser. Just click, record, and transcribe! 🎉
+Just click ctrl+alt+r to start/stop recording and the extension will use OpenAI Whisper API to transcribe your voice, copy the transcription to clipboard and paste it at the current caret position. 🎉
 
-This extension is now a React application and open-source! 🎉 Check out the repository on GitHub: https://github.com/Ordinath/Whisper_to_ChatGPT
+This repository is a fork of https://github.com/Ordinath/Whisper_to_ChatGPT
+I don't know much about web development, and I've spent only a couple of hours on this extension, so it might still be a little buggy and slow, but mostly it works!
 
 ## ✨ Features
 
-- 🎤 Record your voice and transcribe it using the powerful Whisper API
-- ⚡ Configurable shortcut button to quickly activate the microphone
-- 🌐 Use the extension with main inputs on chat.openai.com and edit-inputs
+- 🎤 Record and transcribe your voice on-the-fly using OpenAI's Whisper API
+- ⌨ Configurable keyboard shortcut to quickly start/stop the recording.
 - 🔧 Customize the prompt for better API voice recognition results
-- 👁️ Clean and user-friendly interface with an eye-catching mic button
-- 🔄 Support for multiple Whisper API prompts for versatile transcription contexts
-- 🌍 Implicit translation support for transcribing and translating your input
+- 💬 Support for multiple Whisper API prompts for versatile transcription contexts
+- 🌍 Implicit translation support for transcribing and translating your input to English
 - 💾 Download your transcriptions as sound files for further use
-- 📌 Snippets feature (in beta) for quickly pasting frequently used text in the ChatGPT text area
+- 🌐 Use the extension with main inputs on chat.openai.com and edit-inputs (Not tested in this fork).
+- 📌 Snippets feature (in beta) for quickly pasting frequently used text in the ChatGPT text area (Not tested in this fork).
 
-## 🔧 How to Run Locally
+## 🔧 How to Build and Run Locally
 
 To run the extension locally in your Chrome browser, follow these steps:
 
-1. Clone or download the repository from GitHub: https://github.com/Ordinath/Whisper_to_ChatGPT
-2. Install the dependencies by running `npm install` in the project folder
+1. Download or clone the repository from GitHub: `git clone https://github.com/redocrepus/Whisper-Paste.git`
+2. Install the dependencies by running `npm install` in the project folder **(I've verify that it works with Node.JS v16.5.0)**
 3. Run `npm run build` to build the app for production to the build folder
 4. Open Google Chrome and navigate to chrome://extensions
 5. Enable "Developer mode" by toggling the switch in the top-right corner
 6. Click on "Load unpacked" button and select the build folder created in step 3
 7. The extension should now appear in your list of installed extensions
-
-Now you can use Voice-to-Text ChatGPT extension without downloading it from the Chrome Web Store!
+8. Click the extension's button (microphone) to configure.
 
 ## 🔑 API Key Disclaimer
 
@@ -36,9 +35,9 @@ This extension requires an OpenAI account with a valid API key to function prope
 
 ## 📣 Feedback and Contributions
 
-We're dedicated to improving this extension and have exciting plans for its future! Give it a try, and share your thoughts - we're always open to feedback and suggestions. Feel free to open issues, submit pull requests, or just reach out with any ideas you have.
+Feel free to open issues, submit pull requests, or just reach out for any reason.
 
-😄 Happy recording!
+Enjoy dictating!
 
 ## 🛠️ Development
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
