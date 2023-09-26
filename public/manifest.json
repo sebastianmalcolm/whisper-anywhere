@@ -8,7 +8,7 @@
         "64": "icon64.png",
         "128": "icon128.png"
     },
-    "description": "Prompt with your voice to ChatGPT in your Chrome browser using Whisper API with a button click.",
+    "description": "Voice-to-Text (almost) anywhere in Chrome using OpenAI Whisper API and the clipboard.",
     "content_scripts": [
         {
             "matches": ["<all_urls>"],
@@ -25,5 +25,5 @@
         "default_icon": "icon128.png",
         "default_popup": "index.html"
     },
-    "permissions": ["storage", "<all_urls>"]
+    "permissions": ["storage", "clipboardRead", "clipboardWrite"]
 }
