@@ -2,8 +2,8 @@
 
 Just click ctrl+alt+r to start/stop recording and the extension will use OpenAI Whisper API to transcribe your voice, copy the transcription to clipboard and paste it at the current caret position. 🎉
 
-This repository is a fork of https://github.com/Ordinath/Whisper_to_ChatGPT
-I don't know much about web development, and I've spent only a couple of hours on this extension, so it might still be a little buggy and slow, but mostly it works!
+This repository is a fork of https://github.com/Ordinath/Whisper_to_ChatGPT  
+I don't know much about web development, and I've spent only a few hours on this extension, so it might still be a little buggy and slow, but mostly it works!
 
 ## ✨ Features
 
@@ -21,7 +21,7 @@ I don't know much about web development, and I've spent only a couple of hours o
 To run the extension locally in your Chrome browser, follow these steps:
 
 1. Download or clone the repository from GitHub: `git clone https://github.com/redocrepus/Whisper-Paste.git`
-2. Install the dependencies by running `npm install` in the project folder **(I've verify that it works with Node.JS v16.5.0)**
+2. Install the dependencies by running `npm install` in the project folder **(I've verify that it works with Node.JS v16.5.0, but it also might work with later versions. It did not work for me with the latest version.)**
 3. Run `npm run build` to build the app for production to the build folder
 4. Open Google Chrome and navigate to chrome://extensions
 5. Enable "Developer mode" by toggling the switch in the top-right corner
