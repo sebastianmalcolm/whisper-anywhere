@@ -1,6 +1,6 @@
 // === Time stamp snippet === // See documetation of this entire file after the snippet.
 // This snippet is updated by Auto Time Stamp vscode extension (v0.0.8). Don't touch it. It must be the first lines in the file (see extension's settings for details) 
-debugTimestamp="2023/09/26 17:13:32";
+debugTimestamp="2023/09/29 10:26:34";
 console.log("My Whisper started! Last modified on: " + debugTimestamp);
 // Settings we used (%appdata%\Code\User\settings.json)
 // {
@@ -27,6 +27,8 @@ const MICROPHONE_BUTTON_CLASSES =
     'absolute p-1 rounded-md text-gray-500 bottom-1.5 right-1 md:bottom-2.5 md:right-2 hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900';
 
 const TESTING = false;
+
+gTranscription = "";
 
 async function retrieveFromStorage(key) {
     return new Promise((resolve) => {
@@ -77,7 +79,7 @@ class AudioRecorder {
                     */
                 }
             },
-            true); // true: useCapture
+                true); // true: useCapture
         }
     }
 
@@ -234,41 +236,37 @@ class AudioRecorder {
         // Check if the active element is content-editable or a textarea
         if (activeElement.isContentEditable || activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT') {
 
-            // Read from the clipboard
-            navigator.clipboard.readText()
-                .then(text => {
-                    // If it's a textarea or an input field
-                    if (typeof activeElement.selectionStart === 'number') {
-                        let startPos = activeElement.selectionStart;
-                        let endPos = activeElement.selectionEnd;
-                        let value = activeElement.value;
 
-                        activeElement.value = value.slice(0, startPos) + text + value.slice(endPos);
 
-                        // Move the caret to the end of the inserted text
-                        activeElement.selectionStart = startPos + text.length;
-                        activeElement.selectionEnd = startPos + text.length;
-                    }
-                    // If it's a content-editable element
-                    else if (document.getSelection) {
-                        let sel = document.getSelection();
-                        if (sel.rangeCount) {
-                            let range = sel.getRangeAt(0);
-                            range.deleteContents();
+            // If it's a textarea or an input field
+            if (typeof activeElement.selectionStart === 'number') {
+                let startPos = activeElement.selectionStart;
+                let endPos = activeElement.selectionEnd;
+                let value = activeElement.value;
 
-                            let textNode = document.createTextNode(text);
-                            range.insertNode(textNode);
+                activeElement.value = value.slice(0, startPos) + gTranscription + value.slice(endPos);
 
-                            // Move the caret to the end of the inserted text
-                            range.setStartAfter(textNode);
-                            sel.removeAllRanges();
-                            sel.addRange(range);
-                        }
-                    }
-                })
-                .catch(err => {
-                    console.error('Failed to read clipboard contents: ', err);
-                });
+                // Move the caret to the end of the inserted text
+                activeElement.selectionStart = startPos + gTranscription.length;
+                activeElement.selectionEnd = startPos + gTranscription.length;
+            }
+            // If it's a content-editable element
+            else if (document.getSelection) {
+                let sel = document.getSelection();
+                if (sel.rangeCount) {
+                    let range = sel.getRangeAt(0);
+                    range.deleteContents();
+
+                    let textNode = document.createTextNode(gTranscription);
+                    range.insertNode(textNode);
+
+                    // Move the caret to the end of the inserted text
+                    range.setStartAfter(textNode);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }
+
         }
         else {
             console.error('The active element must be a textarea or a content-editable element');
@@ -322,14 +320,18 @@ class AudioRecorder {
                 if (response.status === 200) {
                     const result = await response.json();
                     const resultText = result.text;
-                    console.log(resultText);
+//                    console.log(resultText);
 
-                    try {
-                        await navigator.clipboard.writeText(resultText);
-                        console.log('Text successfully copied to clipboard: ' + resultText);
-                    } catch (err) {
-                        console.error('Unable to write to clipboard. Error:', err);
-                    }
+                    gTranscription = resultText;
+                    console.log('Text successfully saved: ', gTranscription);
+
+                    // try {
+                    //     await navigator.clipboard.writeText(resultText);
+                    //     console.log('Text successfully copied to clipboard: ' + resultText);
+                    // } catch (err) {
+                    //     console.error('Unable to write to clipboard. Error:', err);
+                    // }
+
                     // log active element tag name
                     console.log('activeElement', document.activeElement.tagName);
 
