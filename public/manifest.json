@@ -1,27 +1,33 @@
 {
     "manifest_version": 3,
-    "name": "whisper-anywhere",
-    "version": "1.0.0",
-    "icons": {
-        "16": "icons/icon16.png",
-        "32": "icons/icon32.png",
-        "64": "icons/icon64.png",
-        "128": "icons/icon128.png"
-    },
+    "name": "Whisper Anywhere",
+    "version": "1.0",
     "description": "Voice-to-Text Anywhere in Chrome with OpenAI Whisper API.",
+    "permissions": [
+        "storage",
+        "activeTab",
+        "clipboardWrite",
+        "clipboardRead"
+    ],
+    "background": {
+        "service_worker": "background.bundle.js"
+    },
     "content_scripts": [
         {
             "matches": [
                 "<all_urls>"
             ],
             "js": [
-                "content.js"
+                "content.bundle.js"
             ],
             "all_frames": false
         }
     ],
-    "background": {
-        "service_worker": "background.js"
+    "icons": {
+        "16": "icons/icon16.png",
+        "32": "icons/icon32.png",
+        "64": "icons/icon64.png",
+        "128": "icons/icon128.png"
     },
     "action": {
         "default_popup": "index.html",
@@ -31,9 +37,5 @@
             "64": "icons/icon64.png",
             "128": "icons/icon128.png"
         }
-    },
-    "permissions": [
-        "storage",
-        "clipboardWrite"
-    ]
+    }
 }

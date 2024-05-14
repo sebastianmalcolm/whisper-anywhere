@@ -1,16 +1,6 @@
 /* global chrome */
-import React, { useState, useEffect } from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import ThemeProvider from '@mui/material/styles/ThemeProvider';
-import createTheme from '@mui/material/styles/createTheme';
-import themeOptions from './themeOptions';
-
-const darkTheme = createTheme(themeOptions);
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { FormControlLabel, Switch, TextField, Typography, Box } from '@mui/material';
 
 function App() { 
     const [token, setToken] = useState('');
@@ -36,21 +26,21 @@ function App() {
         retrieveState();
     }, []);
 
-    const handleTokenChange = (event) => {
+    const handleTokenChange = (event: ChangeEvent<HTMLInputElement>) => {
         setToken(event.target.value);
         chrome.storage?.sync.set({ openai_token: event.target.value }, () => {
             console.log('Config stored:', { openai_token: event.target.value });
         });
     };
 
-    const handlePromptChange = (event) => {
+    const handlePromptChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         setPrompt(event.target.value);
         chrome.storage?.sync.set({ openai_prompt: event.target.value }, () => {
             console.log('Config stored:', { openai_prompt: event.target.value });
         });
     };
 
-    const handleToggleTranslation = (event) => {
+    const handleToggleTranslation = (event: ChangeEvent<HTMLInputElement>) => {
         setTranslationEnabled(event.target.checked);
         chrome.storage?.sync.set({ config_enable_translation: event.target.checked }, () => {
             console.log('Config stored:', { config_enable_translation: event.target.checked });
@@ -58,8 +48,7 @@ function App() {
     };
 
     return (
-        <ThemeProvider theme={darkTheme}>
-            <CssBaseline />
+        <div>
             <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100vh" bgcolor="#2c2c2c" color="white" p={3}>
                 <TextField
                     fullWidth
@@ -97,7 +86,7 @@ function App() {
                     label={<Typography style={{ color: 'white' }}>Enable Translation</Typography>}
                 />
             </Box>
-        </ThemeProvider>
+        </div>
     );
 }
 

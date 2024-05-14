@@ -1,8 +1,10 @@
+/// <reference types="chrome"/>
+
 /* global chrome */
 const TRANSCRIPTION_URL = 'https://api.openai.com/v1/audio/transcriptions';
 const TRANSLATION_URL = 'https://api.openai.com/v1/audio/translations';
 
-async function getFromStorage(key) {
+async function getFromStorage(key: string) {
     return new Promise((resolve) => {
         chrome.storage.sync.get(key, (result) => {
             resolve(result[key]);
@@ -11,49 +13,47 @@ async function getFromStorage(key) {
 }
 
 class Recorder {
-    constructor() {
-        this.isRecording = false;
-        this.mediaRecorder = null;
-        this.altPressCount = 0;
-        this.altTimeout = null;
-        this.transcription = '';
-    }
+    isRecording = false;
+    mediaRecorder: MediaRecorder | null = null;
+    altPressCount = 0;
+    altTimeout: NodeJS.Timeout | null = null;
+    transcription = '';
 
     async init() {
         window.addEventListener('keydown', (event) => this.handleKeyPress(event));
     }
 
-    async handleKeyPress(event) {
+    async handleKeyPress(event: KeyboardEvent) {
         if (event.key === 'Alt') {
             this.altPressCount++;
             if (this.altPressCount === 2) {
-                clearTimeout(this.altTimeout);
+                this.altTimeout && clearTimeout(this.altTimeout);
                 this.toggleRecording();
             } else {
                 this.altTimeout = setTimeout(() => {
                     this.altPressCount = 0;
-                }, 300); // Adjust the delay as needed
+                }, 300);
             }
         }
     }
 
-    async getToken() {
-        return await getFromStorage('openai_token');
+    async getToken(): Promise<string> {
+        return await getFromStorage('openai_token') as string || '';
     }
 
-    async isTranslationEnabled() {
-        return await getFromStorage('config_enable_translation');
+    async isTranslationEnabled(): Promise<boolean> {
+        return await getFromStorage('config_enable_translation') as boolean || false;
     }
 
-    async getPrompt() {
-        return await getFromStorage('openai_prompt') || null;
+    async getPrompt(): Promise<string | null> {
+        return await getFromStorage('openai_prompt') as string || null;
     }
 
     async startRecording() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             this.mediaRecorder = new MediaRecorder(stream);
-            const chunks = [];
+            const chunks: Blob[] = [];
             this.mediaRecorder.addEventListener('dataavailable', (event) => chunks.push(event.data));
             this.mediaRecorder.addEventListener('stop', async () => this.handleRecordingStop(chunks, stream));
 
@@ -64,7 +64,7 @@ class Recorder {
         }
     }
 
-    async handleRecordingStop(chunks, stream) {
+    async handleRecordingStop(chunks: Blob[], stream: MediaStream) {
         const audioBlob = new Blob(chunks, { type: 'audio/webm' });
         const token = await this.getToken();
         const prompt = await this.getPrompt();
@@ -92,7 +92,7 @@ class Recorder {
         stream.getTracks().forEach((track) => track.stop());
     }
 
-    async copyToClipboard(text) {
+    async copyToClipboard(text: string) {
         try {
             await navigator.clipboard.writeText(text);
             console.log('Transcription copied to clipboard:', text);
@@ -102,7 +102,7 @@ class Recorder {
     }
 
     stopRecording() {
-        this.mediaRecorder.stop();
+        this.mediaRecorder?.stop();
         this.isRecording = false;
     }
 
@@ -113,7 +113,7 @@ class Recorder {
             this.startRecording();
         }
         this.altPressCount = 0;
-        clearTimeout(this.altTimeout);
+        this.altTimeout && clearTimeout(this.altTimeout);
     }
 }
 
