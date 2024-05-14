@@ -1,12 +1,18 @@
 class PersistentItem<T> {
     constructor(private key: string) {}
 
-    async get(): Promise<T> {
-        return await chrome.storage.sync.get(this.key) as T;
+    get(): Promise<T> {
+        return new Promise((resolve) => {
+            chrome.storage.sync.get(this.key, (result) => {
+                resolve(result[this.key]);
+            });
+        });
     }
 
-    async set(value: T): Promise<void> {
-        return await chrome.storage.sync.set({ [this.key]: value });
+    set(value: T): Promise<void> {
+        return new Promise((resolve) => {
+            chrome.storage.sync.set({ [this.key]: value }, () => resolve());
+        });
     }
 }
 

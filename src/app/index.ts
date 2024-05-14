@@ -7,25 +7,30 @@ const TRANSLATION_URL = 'https://api.openai.com/v1/audio/translations';
 class Recorder {
     isRecording = false;
     mediaRecorder: MediaRecorder | null = null;
-    altPressCount = 0;
-    altTimeout: NodeJS.Timeout | null = null;
+    altPressTimeout: NodeJS.Timeout | null = null;
     transcription = '';
 
     async init() {
-        window.addEventListener('keydown', (event) => this.handleKeyPress(event));
+        window.addEventListener('keydown', (event) => this.handleKeyDown(event));
+        window.addEventListener('keyup', (event) => this.handleKeyUp(event));
     }
 
-    async handleKeyPress(event: KeyboardEvent) {
-        if (event.key === 'Alt') {
-            this.altPressCount++;
-            if (this.altPressCount === 2) {
-                this.altTimeout && clearTimeout(this.altTimeout);
-                this.toggleRecording();
-            } else {
-                this.altTimeout = setTimeout(() => {
-                    this.altPressCount = 0;
-                }, 300);
+    handleKeyDown(event: KeyboardEvent) {
+        if (event.key === 'Alt' && !this.isRecording) {
+            if (this.altPressTimeout) {
+                clearTimeout(this.altPressTimeout);
             }
+            this.altPressTimeout = setTimeout(() => this.startRecording(), 500);
+        }
+    }
+
+    handleKeyUp(event: KeyboardEvent) {
+        if (event.key === 'Alt' && this.isRecording) {
+            if (this.altPressTimeout) {
+                clearTimeout(this.altPressTimeout);
+                this.altPressTimeout = null;
+            }
+            this.stopRecording();
         }
     }
 
@@ -84,16 +89,6 @@ class Recorder {
     stopRecording() {
         this.mediaRecorder?.stop();
         this.isRecording = false;
-    }
-
-    toggleRecording() {
-        if (this.isRecording) {
-            this.stopRecording();
-        } else {
-            this.startRecording();
-        }
-        this.altPressCount = 0;
-        this.altTimeout && clearTimeout(this.altTimeout);
     }
 }
 
