@@ -1,11 +1,12 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
   entry: {
-    content: './src/content.ts',
+    app: './src/app/index.ts',
     background: './src/background.ts',
     popup: './src/popup/index.tsx',
   },
@@ -51,6 +52,11 @@ module.exports = {
       template: './public/index.html',
       filename: 'index.html',
       chunks: ['popup'],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'public', to: '.', globOptions: { ignore: ['**/index.html'] } },
+      ],
     }),
   ],
   devServer: {
