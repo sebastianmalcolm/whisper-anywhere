@@ -13,6 +13,7 @@ module.exports = {
     path: path.resolve(__dirname, 'build'),
     filename: '[name].bundle.js',
   },
+  devtool: 'cheap-module-source-map',
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
   },
