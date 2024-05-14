@@ -1,17 +1,11 @@
 # Voice-to-Text Anywhere in Chrome with OpenAI Whisper API 🚀
 
-Unlock the power of voice with our Chrome extension! Simply press `Ctrl + Alt + R` to start or stop recording, and let OpenAI's Whisper API transcribe your voice, pasting the text right where you need it. 🎉
+Unlock the power of voice with our Chrome extension! Simply hold `Alt (or option)` key for a second to start and release to stop recording, and let OpenAI's Whisper API transcribe your voice, copying it your clipboard right after it. 🎉
 
 ### Features ✨
 
 - **🎤 Instant Voice Transcription:** Use OpenAI's Whisper API to transcribe your voice instantly.
-- **⌨ Customizable Shortcuts:** Quickly start/stop recording with a configurable keyboard shortcut.
-- **🔧 Custom Prompts:** Tailor the API's voice recognition with personalized prompts.
-- **💬 Multiple Contexts:** Support for multiple Whisper API prompts for versatile use cases.
 - **🌍 Implicit Translation:** Automatically transcribe and translate your input to English.
-- **💾 Save Transcriptions:** Download your transcriptions as sound files for future use.
-- **🌐 ChatGPT Compatibility:** Works with main inputs on chat.openai.com (Not tested in this fork).
-- **📌 Snippets Feature (Beta):** Quickly paste frequently used text in the ChatGPT text area (Not tested in this fork).
 
 ### Getting Started 🔧
 

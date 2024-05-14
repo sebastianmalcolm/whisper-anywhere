@@ -1,16 +1,8 @@
-/// <reference types="chrome"/>
+import { configStore } from "./store";
 
 /* global chrome */
 const TRANSCRIPTION_URL = 'https://api.openai.com/v1/audio/transcriptions';
 const TRANSLATION_URL = 'https://api.openai.com/v1/audio/translations';
-
-async function getFromStorage(key: string) {
-    return new Promise((resolve) => {
-        chrome.storage.sync.get(key, (result) => {
-            resolve(result[key]);
-        });
-    });
-}
 
 class Recorder {
     isRecording = false;
@@ -37,18 +29,6 @@ class Recorder {
         }
     }
 
-    async getToken(): Promise<string> {
-        return await getFromStorage('openai_token') as string || '';
-    }
-
-    async isTranslationEnabled(): Promise<boolean> {
-        return await getFromStorage('config_enable_translation') as boolean || false;
-    }
-
-    async getPrompt(): Promise<string | null> {
-        return await getFromStorage('openai_prompt') as string || null;
-    }
-
     async startRecording() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -66,8 +46,8 @@ class Recorder {
 
     async handleRecordingStop(chunks: Blob[], stream: MediaStream) {
         const audioBlob = new Blob(chunks, { type: 'audio/webm' });
-        const token = await this.getToken();
-        const prompt = await this.getPrompt();
+        const token = await configStore.token.get();
+        const prompt = await configStore.prompt.get();
 
         const headers = new Headers({ Authorization: `Bearer ${token}` });
         const formData = new FormData();
@@ -77,7 +57,7 @@ class Recorder {
             formData.append('prompt', prompt);
         }
 
-        const requestUrl = (await this.isTranslationEnabled()) ? TRANSLATION_URL : TRANSCRIPTION_URL;
+        const requestUrl = (await configStore.enableTranslation.get()) ? TRANSLATION_URL : TRANSCRIPTION_URL;
         const response = await fetch(requestUrl, { method: 'POST', headers, body: formData });
 
         if (response.ok) {
