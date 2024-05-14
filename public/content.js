@@ -46,8 +46,7 @@ class Recorder {
     }
 
     async getPrompt() {
-        const prompt = await getFromStorage('openai_prompt');
-        return prompt || null;
+        return await getFromStorage('openai_prompt') || null;
     }
 
     async startRecording() {
