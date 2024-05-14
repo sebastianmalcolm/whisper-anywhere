@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Whisper-Paste",
+    "name": "whisper-anywhere",
     "version": "1.2.7",
     "icons": {
         "16": "icon16.png",
@@ -8,12 +8,18 @@
         "64": "icon64.png",
         "128": "icon128.png"
     },
-    "description": "Voice-to-Text (almost) anywhere in Chrome using OpenAI Whisper API and the clipboard.",
+    "description": "Voice-to-Text Anywhere in Chrome with OpenAI Whisper API.",
     "content_scripts": [
         {
-            "matches": ["<all_urls>"],
-            "js": ["content.js"],
-            "css": ["content.css"],
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "css": [
+                "content.css"
+            ],
             "run_at": "document_idle",
             "all_frames": false
         }
@@ -25,5 +31,8 @@
         "default_icon": "icon128.png",
         "default_popup": "index.html"
     },
-    "permissions": ["storage", "clipboardRead", "clipboardWrite"]
+    "permissions": [
+        "storage",
+        "clipboardWrite"
+    ]
 }

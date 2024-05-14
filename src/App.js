@@ -12,7 +12,7 @@ import themeOptions from './themeOptions';
 
 const darkTheme = createTheme(themeOptions);
 
-function App() {
+function App() { 
     const [token, setToken] = useState('');
     const [prompt, setPrompt] = useState('');
     const [translationEnabled, setTranslationEnabled] = useState(false);
