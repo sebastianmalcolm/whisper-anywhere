@@ -15,7 +15,7 @@ module.exports = {
   },
   devtool: 'cheap-module-source-map',
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: ['.ts', '.tsx', '.js', '.json', '.css'],
   },
   module: {
     rules: [
@@ -25,7 +25,22 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
+        test: /\.module\.css$/i,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                localIdentName: '[name]__[local]___[hash:base64:5]',
+              },
+            },
+          },
+        ],
+      },
+      {
         test: /\.css$/i,
+        exclude: /\.module\.css$/,
         use: ['style-loader', 'css-loader'],
       },
     ],
@@ -39,7 +54,9 @@ module.exports = {
     }),
   ],
   devServer: {
-    contentBase: path.join(__dirname, 'build'),
+    static: {
+      directory: path.join(__dirname, 'build'),
+    },
     compress: true,
     port: 9000,
   },

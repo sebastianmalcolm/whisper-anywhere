@@ -1,6 +1,6 @@
 /* global chrome */
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { FormControlLabel, Switch, TextField, Typography, Box } from '@mui/material';
+import './App.css';
 
 function App() { 
     const [token, setToken] = useState('');
@@ -48,44 +48,31 @@ function App() {
     };
 
     return (
-        <div>
-            <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100vh" bgcolor="#2c2c2c" color="white" p={3}>
-                <TextField
-                    fullWidth
-                    label="OpenAI API Token"
-                    id="token"
-                    value={token}
-                    onChange={handleTokenChange}
-                    placeholder="sk-..."
-                    size="small"
-                    type={token.length > 0 ? 'password' : 'text'}
-                    InputLabelProps={{ style: { color: 'white' } }}
-                    InputProps={{ style: { color: 'white' } }}
-                    margin="normal"
-                />
-                <TextField
-                    fullWidth
-                    label="Prompt"
-                    id="prompt"
-                    value={prompt}
-                    onChange={handlePromptChange}
-                    multiline
-                    rows={4}
-                    InputLabelProps={{ style: { color: 'white' } }}
-                    InputProps={{ style: { color: 'white' } }}
-                    margin="normal"
-                />
-                <FormControlLabel
-                    control={
-                        <Switch
-                            checked={translationEnabled}
-                            onChange={handleToggleTranslation}
-                            color="primary"
-                        />
-                    }
-                    label={<Typography style={{ color: 'white' }}>Enable Translation</Typography>}
-                />
-            </Box>
+        <div className="container">
+            <div className="box">
+                <div className="inputGroup">
+                    <label htmlFor="token" className="label">OpenAI API Token</label>
+                    <input
+                        type={token.length > 0 ? 'password' : 'text'}
+                        id="token"
+                        value={token}
+                        onChange={handleTokenChange}
+                        className="input"
+                        placeholder="sk-..."
+                    />
+                </div>
+                <div className="inputGroup">
+                    <label htmlFor="prompt" className="label">Prompt</label>
+                    <textarea
+                        id="prompt"
+                        value={prompt}
+                        onChange={handlePromptChange}
+                        className="textarea"
+                        rows={4}
+                        placeholder="Enter your prompt..."
+                    />
+                </div>
+            </div>
         </div>
     );
 }

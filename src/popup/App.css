@@ -1,0 +1,55 @@
+body {
+    width: 400px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #2c2c2c;
+    color: white;
+    padding: 20px;
+}
+
+.box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.label {
+    font-size: 14px;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.input, .textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #3a3a3a;
+    color: white;
+}
+
+.input::placeholder, .textarea::placeholder {
+    color: #bbb;
+}
+
+.switch {
+}
+
+.switchLabel {
+    font-size: 14px;
+    color: white;
+}
