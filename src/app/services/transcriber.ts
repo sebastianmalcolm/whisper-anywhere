@@ -1,62 +1,19 @@
 import { Subject } from 'rxjs';
-import { configStore } from "./store";
+import { configStore } from "../store";
 
 const TRANSCRIPTION_URL = 'https://api.openai.com/v1/audio/transcriptions';
 const TRANSLATION_URL = 'https://api.openai.com/v1/audio/translations';
 
-class Recorder {
-    private _isRecording = false;
+class Transcriber {
     mediaRecorder: MediaRecorder | null = null;
-    altPressTimeout: NodeJS.Timeout | null = null;
     transcription = '';
-    hotkeyHold = false;
     audioContext: AudioContext | null = null;
     analyser: AnalyserNode | null = null;
     dataArray: Uint8Array | null = null;
     audioSource: MediaStreamAudioSourceNode | null = null;
 
-    hotkeySubject = new Subject<boolean>();
-    transcriptionSubject = new Subject<string>();
-    volumeSubject = new Subject<number>();
-    isRecordingSubject = new Subject<boolean>();
-
-    get isRecording() {
-        return this._isRecording;
-    }
-
-    set isRecording(value) {
-        this._isRecording = value;
-        this.isRecordingSubject.next(value);
-    }
-
-    async init() {
-        window.addEventListener('keydown', (event) => this.handleKeyDown(event));
-        window.addEventListener('keyup', (event) => this.handleKeyUp(event));
-    }
-
-    handleKeyDown(event: KeyboardEvent) {
-        if (event.key === 'Alt' && !this.isRecording) {
-            this.hotkeyHold = true;
-            this.hotkeySubject.next(this.hotkeyHold);
-            if (this.altPressTimeout) {
-                clearTimeout(this.altPressTimeout);
-            }
-            this.altPressTimeout = setTimeout(() => this.startRecording(), 1000);
-        }
-    }
-
-    handleKeyUp(event: KeyboardEvent) {
-        if (event.key === 'Alt') {
-            this.hotkeyHold = false;
-            this.hotkeySubject.next(this.hotkeyHold);
-            if (this.altPressTimeout) {
-                clearTimeout(this.altPressTimeout);
-                this.altPressTimeout = null;
-            }
-
-            if (this.isRecording) this.stopRecording();
-        }
-    }
+    transcriptionObservable = new Subject<string>();
+    volumeObservable = new Subject<number>();
 
     async startRecording() {
         try {
@@ -75,9 +32,8 @@ class Recorder {
                     const sum = this.dataArray.reduce((acc, value) => acc + value, 0);
                     const average = sum / this.dataArray.length;
                     const normalizedVolume = average / 255;
-                    this.volumeSubject.next(normalizedVolume);
+                    this.volumeObservable.next(normalizedVolume);
                 }
-            
                 requestAnimationFrame(processVolume);
             };
 
@@ -89,7 +45,6 @@ class Recorder {
             this.mediaRecorder.addEventListener('stop', async () => this.handleRecordingStop(chunks, stream));
 
             this.mediaRecorder.start();
-            this.isRecording = true;
         } catch (error) {
             console.error('Error starting recording:', error);
         }
@@ -114,23 +69,12 @@ class Recorder {
         if (response.ok) {
             const result = await response.json();
             this.transcription = result.text;
-            this.transcriptionSubject.next(this.transcription);
-            await this.copyToClipboard(this.transcription);
+            this.transcriptionObservable.next(this.transcription);
         } else {
             console.error('Error during transcription:', response.statusText);
         }
 
-        this.isRecording = false;
         stream.getTracks().forEach((track) => track.stop());
-    }
-
-    async copyToClipboard(text: string) {
-        try {
-            await navigator.clipboard.writeText(text);
-            console.log('Transcription copied to clipboard:', text);
-        } catch (error) {
-            console.error('Error copying to clipboard:', error);
-        }
     }
 
     stopRecording() {
@@ -142,14 +86,14 @@ class Recorder {
             this.dataArray = null;
             this.audioSource = null;
         }
-        this.isRecording = false;
+    }
+
+    resetTranscription() {
+        this.transcription = '';
+        this.transcriptionObservable.next(this.transcription);
     }
 }
 
-const recorder = new Recorder();
-export const hotkeySubject = recorder.hotkeySubject;
-export const transcriptionSubject = recorder.transcriptionSubject;
-export const volumeSubject = recorder.volumeSubject;
-export const isRecordingSubject = recorder.isRecordingSubject;
+const recorder = new Transcriber();
 
 export default recorder;

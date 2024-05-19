@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Subscription } from 'rxjs';
+import React from 'react';
 import styled from 'styled-components';
-import { isRecordingSubject, transcriptionSubject } from '../recorder';
 import RedRecordingCircle from './RedRecordingCircle';
 import ActionButtonGroup from './ActionButtonGroup';
+import useTranscriber from '../hooks/useTranscriber';
 
 const OverlayContainer = styled.div<{ isVisible: boolean }>`
     position: fixed;
@@ -31,26 +30,13 @@ const OverlayTranscription = styled.p`
 `;
 
 const Overlay: React.FC = () => {
-    const [isRecording, setIsRecording] = useState(false);
-    const [transcription, setTranscription] = useState('');
-
-    useEffect(() => {
-        const isRecordingSub: Subscription = isRecordingSubject.subscribe(setIsRecording);
-        const transcriptionSub: Subscription = transcriptionSubject.subscribe(setTranscription);
-
-        return () => {
-            isRecordingSub.unsubscribe();
-            transcriptionSub.unsubscribe();
-        };
-    }, []);
-
-    const clearTranscription = () => setTranscription('');
+    const { isRecording, transcription } = useTranscriber();
 
     return (
         <div>
             <RedRecordingCircle isRecording={isRecording} />
             <OverlayContainer isVisible={!!transcription}>
-                <ActionButtonGroup clearTranscription={clearTranscription} />
+                <ActionButtonGroup elements={[]} />
                 <OverlayTranscription>{transcription}</OverlayTranscription>
             </OverlayContainer>
         </div>

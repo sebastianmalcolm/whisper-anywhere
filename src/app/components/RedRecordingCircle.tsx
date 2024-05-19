@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import { volumeSubject } from "../recorder";
-import { Subscription } from "rxjs";
+import useTranscriber from "../hooks/useTranscriber";
 
 const Circle = styled.div<{ visible: boolean, size: number }>`
     width: ${({ size }) => size}px;
@@ -17,15 +16,7 @@ const Circle = styled.div<{ visible: boolean, size: number }>`
 `;
 
 const Recorder = ({ isRecording }: { isRecording: boolean }) => {
-    const [volume, setVolume] = useState(0);
-
-    useEffect(() => {
-        const volumeSub: Subscription = volumeSubject.subscribe(setVolume);
-
-        return () => {
-            volumeSub.unsubscribe();
-        };
-    }, []);
+    const { volume } = useTranscriber();
 
     const size = volume * 100 + 10;
 

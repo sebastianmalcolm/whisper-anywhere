@@ -1,9 +1,7 @@
-import React from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import ActionButton from './ActionButton';
-import AIIcon from '../assets/ai-icon.svg';
-import CopyIcon from '../assets/copy-icon.svg';
-import CancelIcon from '../assets/cancel-icon.svg';
+import { ButtonGroupAction, ButtonGroupElement } from '../types';
 
 const StyledButtonGroup = styled.div`
     display: flex;
@@ -19,16 +17,49 @@ const ButtonGroupSpacer = styled.div`
 `;
 
 interface ButtonGroupProps {
-    clearTranscription: () => void;
+    elements: ButtonGroupElement[];
+    acceptHotkeys?: boolean;
 }
 
-const ButtonGroup: React.FC<ButtonGroupProps> = ({ clearTranscription }) => (
-    <StyledButtonGroup>
-        <ActionButton icon={AIIcon} action={clearTranscription} hotkey="a" />
-        <ActionButton icon={CopyIcon} action={clearTranscription} hotkey="c" />
-        <ButtonGroupSpacer />
-        <ActionButton icon={CancelIcon} action={clearTranscription} hotkey="x" />
-    </StyledButtonGroup>
-);
+const ButtonGroup: React.FC<ButtonGroupProps> = ({ elements, acceptHotkeys }) => {
+    const acceptHotkeysRef = useRef(acceptHotkeys);
+
+    // updating acceptHotkeysRef
+    useEffect(() => {
+        acceptHotkeysRef.current = acceptHotkeys;
+    }, [acceptHotkeys]);
+
+    // creating items
+    const items = useMemo(() => elements.map((element, index) => {
+        if (element.type === 'button-group-action') {
+            return <ActionButton key={index} icon={element.icon} action={element.action} hotkey={element.hotkey} />
+        } else if (element.type === 'button-group-spacer') {
+            return <ButtonGroupSpacer key={index} />
+        } else {
+            throw new Error('Invalid element type');
+        }
+    }), [elements]);
+
+    // setting hotkeys
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            const element = elements.find((element) => element.type === 'button-group-action' && element.hotkey === event.key);
+            if (element && acceptHotkeysRef.current) {
+                event.preventDefault();
+                event.stopPropagation();
+                (element as ButtonGroupAction).action();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [elements]);
+
+    return (
+        <StyledButtonGroup>
+            {items}
+        </StyledButtonGroup>
+    )
+}
 
 export default ButtonGroup;

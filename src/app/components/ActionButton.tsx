@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import Icon from '../common/Icon';
+import Icon from './common/Icon';
+import { ButtonGroupAction } from '../types';
 
 const StyledActionButton = styled.div`
     width: 1.8rem;
@@ -17,25 +18,9 @@ const StyledActionButton = styled.div`
     }
 `;
 
-interface ActionButtonProps {
-    icon: React.FC;
-    action: () => void;
-    hotkey: string;
-}
+type ActionButtonProps = Omit<ButtonGroupAction, 'type'>;
 
 const ActionButton: React.FC<ActionButtonProps> = ({ icon, action, hotkey }) => {
-    useEffect(() => {
-        const handleKeyPress = (event: KeyboardEvent) => {
-            if (event.key === hotkey) {
-                action();
-            }
-        };
-        window.addEventListener('keydown', handleKeyPress);
-        return () => {
-            window.removeEventListener('keydown', handleKeyPress);
-        };
-    }, [hotkey, action]);
-
     return (
         <StyledActionButton onClick={action}>
             <Icon icon={icon} />
