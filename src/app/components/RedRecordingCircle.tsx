@@ -15,12 +15,12 @@ const Circle = styled.div<{ visible: boolean, size: number }>`
     transform: translateX(-50%) translateY(50%) translateY(${({ visible }) => (visible ? 0 : 30)}px);
 `;
 
-const Recorder = ({ isRecording }: { isRecording: boolean }) => {
-    const { volume } = useTranscriber();
+const RedRecordingCircle = () => {
+    const { volume, isRecording } = useTranscriber();
 
     const size = volume * 100 + 10;
 
     return <Circle size={size} visible={isRecording} />;
 };
 
-export default Recorder;
+export default RedRecordingCircle;

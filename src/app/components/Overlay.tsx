@@ -30,13 +30,13 @@ const OverlayTranscription = styled.p`
 `;
 
 const Overlay: React.FC = () => {
-    const { isRecording, transcription } = useTranscriber();
+    const { transcription } = useTranscriber();
 
     return (
         <div>
-            <RedRecordingCircle isRecording={isRecording} />
+            <RedRecordingCircle />
             <OverlayContainer isVisible={!!transcription}>
-                <ActionButtonGroup elements={[]} />
+                <ActionButtonGroup elements={[]} acceptHotkeys={false} />
                 <OverlayTranscription>{transcription}</OverlayTranscription>
             </OverlayContainer>
         </div>

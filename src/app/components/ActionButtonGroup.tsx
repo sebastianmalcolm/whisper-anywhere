@@ -18,7 +18,7 @@ const ButtonGroupSpacer = styled.div`
 
 interface ButtonGroupProps {
     elements: ButtonGroupElement[];
-    acceptHotkeys?: boolean;
+    acceptHotkeys: boolean;
 }
 
 const ButtonGroup: React.FC<ButtonGroupProps> = ({ elements, acceptHotkeys }) => {

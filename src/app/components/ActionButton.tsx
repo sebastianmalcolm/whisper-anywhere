@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Icon from './common/Icon';
 import { ButtonGroupAction } from '../types';
@@ -20,7 +20,7 @@ const StyledActionButton = styled.div`
 
 type ActionButtonProps = Omit<ButtonGroupAction, 'type'>;
 
-const ActionButton: React.FC<ActionButtonProps> = ({ icon, action, hotkey }) => {
+const ActionButton: React.FC<ActionButtonProps> = ({ icon, action }) => {
     return (
         <StyledActionButton onClick={action}>
             <Icon icon={icon} />
