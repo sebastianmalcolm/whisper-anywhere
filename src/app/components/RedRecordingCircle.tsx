@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import useTranscriber from "../hooks/useTranscriber";
+import useRecordingVolume from "../hooks/useRecordingVolume";
 
 const Circle = styled.div<{ visible: boolean, size: number }>`
     width: ${({ size }) => size}px;
@@ -16,7 +17,8 @@ const Circle = styled.div<{ visible: boolean, size: number }>`
 `;
 
 const RedRecordingCircle = () => {
-    const { volume, isRecording } = useTranscriber();
+    const { isRecording } = useTranscriber();
+    const { volume } = useRecordingVolume();
 
     const size = volume * 100 + 10;
 

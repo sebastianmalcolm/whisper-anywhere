@@ -4,23 +4,21 @@ import { Subscription } from 'rxjs';
 
 const useTranscriber = () => {
     const [isRecording, setIsRecording] = useState(false);
-    const [volume, setVolume] = useState(0);
     const [transcription, setTranscription] = useState('');
 
     useEffect(() => {
-        const volumeSub: Subscription = transcriber.volumeObservable.subscribe(setVolume);
         const transcriptionSub: Subscription = transcriber.transcriptionObservable.subscribe(setTranscription);
+        const isRecordingSub: Subscription = transcriber.isRecordingObservable.subscribe(setIsRecording);
 
         return () => {
-            volumeSub.unsubscribe();
             transcriptionSub.unsubscribe();
+            isRecordingSub.unsubscribe();
         };
     }, []);
 
     const startRecording = useCallback(() => {
         try {
             transcriber.startRecording();
-            setIsRecording(true);
         } catch (error) {
             console.error('Error starting recording:', error);
         }
@@ -29,7 +27,6 @@ const useTranscriber = () => {
     const stopRecording = useCallback(() => {
         try {
             transcriber.stopRecording();
-            setIsRecording(false);
         } catch (error) {
             console.error('Error stopping recording:', error);
         }
@@ -39,7 +36,6 @@ const useTranscriber = () => {
 
     return {
         isRecording,
-        volume,
         transcription,
         startRecording,
         stopRecording,

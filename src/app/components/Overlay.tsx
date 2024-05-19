@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import RedRecordingCircle from './RedRecordingCircle';
 import ActionButtonGroup from './ActionButtonGroup';
 import useTranscriber from '../hooks/useTranscriber';
+import useMainHotkey from '../hooks/useMainHotkey';
+import { constants } from '../config';
 
 const OverlayContainer = styled.div<{ isVisible: boolean }>`
     position: fixed;
@@ -30,6 +32,7 @@ const OverlayTranscription = styled.p`
 `;
 
 const Overlay: React.FC = () => {
+    useMainHotkey(constants.HOTKEY);
     const { transcription } = useTranscriber();
 
     return (

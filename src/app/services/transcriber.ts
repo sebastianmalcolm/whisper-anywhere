@@ -1,8 +1,5 @@
 import { Subject } from 'rxjs';
-import { configStore } from "../store";
-
-const TRANSCRIPTION_URL = 'https://api.openai.com/v1/audio/transcriptions';
-const TRANSLATION_URL = 'https://api.openai.com/v1/audio/translations';
+import { configStore, constants } from '../config';
 
 class Transcriber {
     mediaRecorder: MediaRecorder | null = null;
@@ -14,9 +11,10 @@ class Transcriber {
 
     transcriptionObservable = new Subject<string>();
     volumeObservable = new Subject<number>();
+    isRecordingObservable = new Subject<boolean>();
 
     async startRecording() {
-        try {
+        try {            
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             this.audioContext = new window.AudioContext();
             this.analyser = this.audioContext.createAnalyser();
@@ -45,6 +43,7 @@ class Transcriber {
             this.mediaRecorder.addEventListener('stop', async () => this.handleRecordingStop(chunks, stream));
 
             this.mediaRecorder.start();
+            this.isRecordingObservable.next(true);
         } catch (error) {
             console.error('Error starting recording:', error);
         }
@@ -63,7 +62,7 @@ class Transcriber {
             formData.append('prompt', prompt);
         }
 
-        const requestUrl = (await configStore.enableTranslation.get()) ? TRANSLATION_URL : TRANSCRIPTION_URL;
+        const requestUrl = (await configStore.enableTranslation.get()) ? constants.TRANSLATION_URL : constants.TRANSCRIPTION_URL;
         const response = await fetch(requestUrl, { method: 'POST', headers, body: formData });
 
         if (response.ok) {
@@ -74,6 +73,7 @@ class Transcriber {
             console.error('Error during transcription:', response.statusText);
         }
 
+        this.isRecordingObservable.next(false);
         stream.getTracks().forEach((track) => track.stop());
     }
 
