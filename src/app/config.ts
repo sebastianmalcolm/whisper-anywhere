@@ -16,8 +16,6 @@ const createChromeStorageItem = <T>(key: string, defaultValue: T) => {
 }
 
 export const constants = {
-    TRANSCRIPTION_URL: 'https://api.openai.com/v1/audio/transcriptions',
-    TRANSLATION_URL: 'https://api.openai.com/v1/audio/translations',
     HOTKEY: 'Alt',
 }
 

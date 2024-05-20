@@ -1,9 +1,12 @@
 import { Subject } from 'rxjs';
 import { configStore, constants } from '../config';
 
+const TRANSCRIPTION_URL = 'https://api.openai.com/v1/audio/transcriptions';
+const TRANSLATION_URL = 'https://api.openai.com/v1/audio/translations';
+
 class Transcriber {
+    private _transcription = '';
     mediaRecorder: MediaRecorder | null = null;
-    transcription = '';
     audioContext: AudioContext | null = null;
     analyser: AnalyserNode | null = null;
     dataArray: Uint8Array | null = null;
@@ -12,6 +15,16 @@ class Transcriber {
     transcriptionObservable = new Subject<string>();
     volumeObservable = new Subject<number>();
     isRecordingObservable = new Subject<boolean>();
+
+    get transcription() {
+        return this._transcription;
+    }
+
+    set transcription(value: string) {
+        this._transcription = value;
+        this.transcriptionObservable.next(value);
+        if (value) navigator.clipboard.writeText(value);
+    }
 
     async startRecording() {
         try {            
@@ -62,13 +75,12 @@ class Transcriber {
             formData.append('prompt', prompt);
         }
 
-        const requestUrl = (await configStore.enableTranslation.get()) ? constants.TRANSLATION_URL : constants.TRANSCRIPTION_URL;
+        const requestUrl = (await configStore.enableTranslation.get()) ? TRANSLATION_URL : TRANSCRIPTION_URL;
         const response = await fetch(requestUrl, { method: 'POST', headers, body: formData });
 
         if (response.ok) {
             const result = await response.json();
             this.transcription = result.text;
-            this.transcriptionObservable.next(this.transcription);
         } else {
             console.error('Error during transcription:', response.statusText);
         }
@@ -90,7 +102,6 @@ class Transcriber {
 
     resetTranscription() {
         this.transcription = '';
-        this.transcriptionObservable.next(this.transcription);
     }
 }
 

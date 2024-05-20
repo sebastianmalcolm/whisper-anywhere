@@ -32,11 +32,14 @@ const useTranscriber = () => {
         }
     }, []);
 
+    const setTranscriptionFn = useCallback((value: string) => transcriber.transcription = value, []);
+
     const clearTranscription = useCallback(() => transcriber.resetTranscription(), []);
 
     return {
         isRecording,
         transcription,
+        setTranscription: setTranscriptionFn,
         startRecording,
         stopRecording,
         clearTranscription

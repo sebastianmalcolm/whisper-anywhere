@@ -1,10 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import RedRecordingCircle from './RedRecordingCircle';
 import ActionButtonGroup from './ActionButtonGroup';
 import useTranscriber from '../hooks/useTranscriber';
 import useMainHotkey from '../hooks/useMainHotkey';
 import { constants } from '../config';
+import { ButtonGroupElement } from '../types';
+
+import AiIcon from '../assets/ai-icon.svg'
+import { enhancer } from '../services/enhancer';
 
 const OverlayContainer = styled.div<{ isVisible: boolean }>`
     position: fixed;
@@ -33,13 +37,46 @@ const OverlayTranscription = styled.p`
 
 const Overlay: React.FC = () => {
     useMainHotkey(constants.HOTKEY);
-    const { transcription } = useTranscriber();
+    const showingTranscriptionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const { transcription, setTranscription } = useTranscriber();
+    const [showTranscription, setShowTranscription] = useState(false);
+
+    const actionElements = useMemo(() => {
+        const elements: ButtonGroupElement[] = [
+            {
+                type: 'button-group-action',
+                icon: AiIcon,
+                action: async () => {
+                    const answer = await enhancer.fixGrammar(transcription)
+                    setTranscription(answer)
+                },
+                hotkey: 'a'
+            }
+        ];
+
+        return elements;
+    }, [transcription]);
+
+    useEffect(() => {
+        clearTimeout(showingTranscriptionTimeoutRef.current!);
+        showingTranscriptionTimeoutRef.current = null;
+
+        setShowTranscription(!!transcription);
+
+        if (transcription) {
+            showingTranscriptionTimeoutRef.current = setTimeout(() => {
+                setShowTranscription(false);
+                showingTranscriptionTimeoutRef.current = null;
+            }, transcription.length * 80);
+        }
+    }, [transcription]);
 
     return (
         <div>
             <RedRecordingCircle />
-            <OverlayContainer isVisible={!!transcription}>
-                <ActionButtonGroup elements={[]} acceptHotkeys={false} />
+            <OverlayContainer isVisible={showTranscription}>
+                <ActionButtonGroup elements={actionElements} acceptHotkeys={false} />
                 <OverlayTranscription>{transcription}</OverlayTranscription>
             </OverlayContainer>
         </div>
