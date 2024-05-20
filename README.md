@@ -2,10 +2,14 @@
 
 Unlock the power of voice with our Chrome extension! Simply hold `Alt (or option)` key for a second to start and release to stop recording, and let OpenAI's Whisper API transcribe your voice, copying it your clipboard right after it. 🎉
 
-### Features ✨
+### Screenshots 📸
 
-- **🎤 Instant Voice Transcription:** Use OpenAI's Whisper API to transcribe your voice instantly.
-- **🌍 Implicit Translation:** Automatically transcribe and translate your input to English.
+<div style="display: flex;">
+    <img src="./screenshots/1.png" width="640" height="400" alt="Whisper Anywhere" style="flex: 1;">
+    <img src="./screenshots/2.png" width="640" height="400" alt="Whisper Anywhere" style="flex: 1;">
+    <img src="./screenshots/3.png" width="640" height="400" alt="Whisper Anywhere" style="flex: 1;">
+    <img src="./screenshots/4.png" width="640" height="400" alt="Whisper Anywhere" style="flex: 1;">
+</div>
 
 ### Getting Started 🔧
 
