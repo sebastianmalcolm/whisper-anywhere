@@ -5,9 +5,7 @@
     "description": "Voice-to-Text Anywhere in Chrome with OpenAI Whisper API.",
     "permissions": [
         "storage",
-        "activeTab",
-        "clipboardWrite",
-        "clipboardRead"
+        "clipboardWrite"
     ],
     "background": {
         "service_worker": "background.bundle.js"
