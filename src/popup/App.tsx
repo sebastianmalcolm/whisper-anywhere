@@ -1,77 +1,122 @@
-/* global chrome */
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ProviderConfig } from '../app/types';
+import { configStore } from '../app/config';
+import { ProviderSelector } from './components/ProviderSelector';
+import { ProviderSettings } from './components/ProviderSettings';
+import { ProviderTester } from './components/ProviderTester';
 import './App.css';
 
-function App() { 
-    const [token, setToken] = useState('');
-    const [prompt, setPrompt] = useState('');
+function App() {
+    const [providerConfig, setProviderConfig] = useState<ProviderConfig>({
+        selectedProvider: 'openai',
+        providers: {}
+    });
     const [translationEnabled, setTranslationEnabled] = useState(false);
 
     // Retrieve stored data
     useEffect(() => {
         const retrieveState = async () => {
-            await chrome.storage?.sync.get(['openai_token', 'openai_prompt', 'config_enable_translation'], (result) => {
-                console.log('Config retrieved:', { ...result, openai_token: result.openai_token ? '***' : '' });
-                if (result.openai_token) {
-                    setToken(result.openai_token);
-                }
-                if (result.openai_prompt) {
-                    setPrompt(result.openai_prompt);
-                }
-                if (result.config_enable_translation) {
-                    setTranslationEnabled(result.config_enable_translation);
-                }
-            });
+            const [config, translation] = await Promise.all([
+                configStore.providerConfig.get(),
+                configStore.enableTranslation.get()
+            ]);
+
+            setProviderConfig(config);
+            setTranslationEnabled(translation);
+
+            // Handle legacy configuration if needed
+            const legacyToken = await configStore.token.get();
+            const legacyPrompt = await configStore.prompt.get();
+
+            if (legacyToken && !config.providers.openai?.token) {
+                setProviderConfig(prev => ({
+                    ...prev,
+                    providers: {
+                        ...prev.providers,
+                        openai: {
+                            token: legacyToken,
+                            settings: {
+                                prompt: legacyPrompt
+                            }
+                        }
+                    }
+                }));
+            }
         };
+
         retrieveState();
     }, []);
 
-    const handleTokenChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setToken(event.target.value);
-        chrome.storage?.sync.set({ openai_token: event.target.value }, () => {
-            console.log('Config stored:', { openai_token: event.target.value });
+    const handleProviderChange = (providerId: string) => {
+        setProviderConfig(prev => ({
+            ...prev,
+            selectedProvider: providerId
+        }));
+        configStore.providerConfig.set({
+            ...providerConfig,
+            selectedProvider: providerId
         });
     };
 
-    const handlePromptChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-        setPrompt(event.target.value);
-        chrome.storage?.sync.set({ openai_prompt: event.target.value }, () => {
-            console.log('Config stored:', { openai_prompt: event.target.value });
+    const handleSettingsChange = (settings: any) => {
+        setProviderConfig(prev => ({
+            ...prev,
+            providers: {
+                ...prev.providers,
+                [prev.selectedProvider]: settings
+            }
+        }));
+        configStore.providerConfig.set({
+            ...providerConfig,
+            providers: {
+                ...providerConfig.providers,
+                [providerConfig.selectedProvider]: settings
+            }
         });
     };
 
-    const handleToggleTranslation = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleToggleTranslation = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTranslationEnabled(event.target.checked);
-        chrome.storage?.sync.set({ config_enable_translation: event.target.checked }, () => {
-            console.log('Config stored:', { config_enable_translation: event.target.checked });
-        });
+        configStore.enableTranslation.set(event.target.checked);
     };
 
     return (
         <div className="container">
             <div className="box">
-                <div className="inputGroup">
-                    <label htmlFor="token" className="label">OpenAI API Token</label>
-                    <input
-                        type={token.length > 0 ? 'password' : 'text'}
-                        id="token"
-                        value={token}
-                        onChange={handleTokenChange}
-                        className="input"
-                        placeholder="sk-..."
-                    />
+                <h2>Provider Configuration</h2>
+                
+                <ProviderSelector
+                    selectedProvider={providerConfig.selectedProvider}
+                    onProviderChange={handleProviderChange}
+                />
+
+                <div className="divider" />
+
+                <ProviderSettings
+                    providerId={providerConfig.selectedProvider}
+                    settings={providerConfig.providers[providerConfig.selectedProvider] || {
+                        token: '',
+                        settings: {}
+                    }}
+                    onSettingsChange={handleSettingsChange}
+                />
+
+                <div className="divider" />
+
+                <div className="global-settings">
+                    <label className="checkbox-label">
+                        <input
+                            type="checkbox"
+                            checked={translationEnabled}
+                            onChange={handleToggleTranslation}
+                        />
+                        Enable Translation
+                    </label>
                 </div>
-                <div className="inputGroup">
-                    <label htmlFor="prompt" className="label">Prompt</label>
-                    <textarea
-                        id="prompt"
-                        value={prompt}
-                        onChange={handlePromptChange}
-                        className="textarea"
-                        rows={4}
-                        placeholder="Enter your prompt..."
-                    />
-                </div>
+
+                <div className="divider" />
+
+                <ProviderTester providerConfig={providerConfig} />
             </div>
         </div>
     );
