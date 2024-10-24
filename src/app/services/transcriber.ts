@@ -1,8 +1,6 @@
 import { Subject } from 'rxjs';
-import { configStore, constants } from '../config';
-
-const TRANSCRIPTION_URL = 'https://api.openai.com/v1/audio/transcriptions';
-const TRANSLATION_URL = 'https://api.openai.com/v1/audio/translations';
+import { configStore } from '../config';
+import { providerFactory, TranscriptionResult } from './providers';
 
 class Transcriber {
     private _transcription = '';
@@ -15,6 +13,7 @@ class Transcriber {
     transcriptionObservable = new Subject<string>();
     volumeObservable = new Subject<number>();
     isRecordingObservable = new Subject<boolean>();
+    errorObservable = new Subject<string>();
 
     get transcription() {
         return this._transcription;
@@ -59,34 +58,45 @@ class Transcriber {
             this.isRecordingObservable.next(true);
         } catch (error) {
             console.error('Error starting recording:', error);
+            this.errorObservable.next('Failed to start recording: ' + (error as Error).message);
         }
     }
 
     async handleRecordingStop(chunks: Blob[], stream: MediaStream) {
-        const audioBlob = new Blob(chunks, { type: 'audio/webm' });
-        const token = await configStore.token.get();
-        const prompt = await configStore.prompt.get();
+        try {
+            const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+            
+            // Get current provider configuration
+            const providerConfig = await configStore.providerConfig.get();
+            const provider = providerFactory.getProvider(providerConfig);
+            
+            // Get legacy prompt if it exists (for backward compatibility)
+            const legacyPrompt = await configStore.prompt.get();
+            const prompt = legacyPrompt || providerConfig.providers[providerConfig.selectedProvider]?.settings?.prompt;
 
-        const headers = new Headers({ Authorization: `Bearer ${token}` });
-        const formData = new FormData();
-        formData.append('file', audioBlob, 'recording.webm');
-        formData.append('model', 'whisper-1');
-        if (prompt) {
-            formData.append('prompt', prompt);
-        }
+            // Get translation preference
+            const enableTranslation = await configStore.enableTranslation.get();
 
-        const requestUrl = (await configStore.enableTranslation.get()) ? TRANSLATION_URL : TRANSCRIPTION_URL;
-        const response = await fetch(requestUrl, { method: 'POST', headers, body: formData });
+            // Process transcription using selected provider
+            const result: TranscriptionResult = await provider.transcribe({
+                file: audioBlob,
+                prompt,
+                translate: enableTranslation
+            });
 
-        if (response.ok) {
-            const result = await response.json();
+            if (result.error) {
+                this.errorObservable.next(result.error);
+                return;
+            }
+
             this.transcription = result.text;
-        } else {
-            console.error('Error during transcription:', response.statusText);
+        } catch (error) {
+            console.error('Error during transcription:', error);
+            this.errorObservable.next('Transcription failed: ' + (error as Error).message);
+        } finally {
+            this.isRecordingObservable.next(false);
+            stream.getTracks().forEach((track) => track.stop());
         }
-
-        this.isRecordingObservable.next(false);
-        stream.getTracks().forEach((track) => track.stop());
     }
 
     stopRecording() {

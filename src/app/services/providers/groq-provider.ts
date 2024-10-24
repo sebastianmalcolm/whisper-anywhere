@@ -1,9 +1,15 @@
 import { ApiProvider, ProviderSettings } from '../../types';
-import { BaseProvider, TranscriptionOptions, TranscriptionResult } from './base-provider';
+import { BaseProvider, TranscriptionOptions, TranscriptionResult, TextCompletionOptions, TextCompletionResult, StreamCallbacks } from './base-provider';
+import Groq from 'groq-sdk';
 
 export class GroqProvider extends BaseProvider {
+    private groqClient: Groq;
+
     constructor(provider: ApiProvider, settings: ProviderSettings) {
         super(provider, settings);
+        this.groqClient = new Groq({
+            apiKey: settings.token
+        });
     }
 
     async transcribe(options: TranscriptionOptions): Promise<TranscriptionResult> {
@@ -44,8 +50,16 @@ export class GroqProvider extends BaseProvider {
             }
 
             // Add response format preference if specified
+            // Note: Groq doesn't support vtt or srt formats
             if (this.settings.settings?.response_format) {
-                formData.append('response_format', this.settings.settings.response_format);
+                const format = this.settings.settings.response_format;
+                if (!this.provider.limitations.supportedResponseFormats.includes(format)) {
+                    return {
+                        text: '',
+                        error: `Unsupported response format: ${format}`
+                    };
+                }
+                formData.append('response_format', format);
             }
 
             const response = await fetch(requestUrl, {
@@ -66,6 +80,79 @@ export class GroqProvider extends BaseProvider {
         } catch (error) {
             const errorMessage = await this.handleApiError(error);
             return { text: '', error: errorMessage };
+        }
+    }
+
+    protected async handleTextCompletion(options: TextCompletionOptions): Promise<TextCompletionResult> {
+        try {
+            const isJsonMode = options.jsonMode || 
+                             options.systemPrompt.includes('JSON') || 
+                             options.systemPrompt.includes('json_object') ||
+                             options.userPrompt.toLowerCase().includes('json');
+
+            const completion = await this.groqClient.chat.completions.create({
+                messages: [
+                    {
+                        role: 'system',
+                        content: options.systemPrompt
+                    },
+                    {
+                        role: 'user',
+                        content: options.userPrompt
+                    }
+                ],
+                model: 'mixtral-8x7b-32768', // Using Mixtral as recommended for JSON generation
+                temperature: isJsonMode ? 0 : 0.5, // Use 0 temperature for JSON mode
+                max_tokens: options.maxTokens || 1024,
+                top_p: 1,
+                stream: false,
+                ...(isJsonMode && {
+                    response_format: { type: 'json_object' }
+                })
+            });
+
+            return {
+                text: completion.choices[0]?.message?.content || ''
+            };
+        } catch (error) {
+            const errorMessage = await this.handleApiError(error);
+            return { text: '', error: errorMessage };
+        }
+    }
+
+    protected async handleStreamingTextCompletion(
+        options: TextCompletionOptions,
+        callbacks: StreamCallbacks
+    ): Promise<void> {
+        try {
+            const stream = await this.groqClient.chat.completions.create({
+                messages: [
+                    {
+                        role: 'system',
+                        content: options.systemPrompt
+                    },
+                    {
+                        role: 'user',
+                        content: options.userPrompt
+                    }
+                ],
+                model: 'mixtral-8x7b-32768',
+                temperature: 0.5,
+                max_tokens: options.maxTokens || 1024,
+                top_p: 1,
+                stream: true
+            });
+
+            for await (const chunk of stream) {
+                const content = chunk.choices[0]?.delta?.content || '';
+                if (content) {
+                    callbacks.onChunk(content);
+                }
+            }
+            callbacks.onComplete();
+        } catch (error) {
+            const errorMessage = await this.handleApiError(error);
+            callbacks.onError(errorMessage);
         }
     }
 

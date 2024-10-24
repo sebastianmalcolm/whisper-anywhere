@@ -1,7 +1,6 @@
 import { configStore } from "../config";
-
-const TEXT_COMPLETION_MODEL_URL = 'https://api.openai.com/v1/chat/completions';
-const MODEL_NAME = 'gpt-4o';
+import { providerFactory } from "./providers";
+import { Subject } from "rxjs";
 
 const FIX_GRAMMAR_SYSTEM_PROMPT = `
 Fix the grammar in the following text and only return the corrected text. Here are some examples:
@@ -26,33 +25,64 @@ I hope life has been treating you and your family well. This text has some gramm
 `;
 
 class Enhancer {
-    async fixGrammar(text: string): Promise<string> {
-        const token = await configStore.token.get();
+    private enhancementObservable = new Subject<string>();
+    private errorObservable = new Subject<string>();
 
-        const response = await fetch(TEXT_COMPLETION_MODEL_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                model: MODEL_NAME,
-                messages: [
+    get onEnhancement() {
+        return this.enhancementObservable.asObservable();
+    }
+
+    get onError() {
+        return this.errorObservable.asObservable();
+    }
+
+    async fixGrammar(text: string, stream: boolean = false): Promise<string> {
+        try {
+            const providerConfig = await configStore.providerConfig.get();
+            const provider = providerFactory.getProvider(providerConfig);
+
+            if (stream) {
+                let enhancedText = '';
+                await provider.streamTextCompletion(
                     {
-                        role: 'system',
-                        content: FIX_GRAMMAR_SYSTEM_PROMPT,
+                        systemPrompt: FIX_GRAMMAR_SYSTEM_PROMPT,
+                        userPrompt: `ORIGINAL:\n${text}\n\nFIXED:`,
+                        stream: true
                     },
                     {
-                        role: 'user',
-                        content: `ORIGINAL:\n${text}\n\nFIXED:`,
+                        onChunk: (chunk) => {
+                            enhancedText += chunk;
+                            this.enhancementObservable.next(enhancedText);
+                        },
+                        onError: (error) => {
+                            this.errorObservable.next(error);
+                        },
+                        onComplete: () => {
+                            // Final update with complete text
+                            this.enhancementObservable.next(enhancedText);
+                        }
                     }
-                ],
-                max_tokens: 100
-            })
-        });
+                );
+                return enhancedText;
+            } else {
+                const result = await provider.completeText({
+                    systemPrompt: FIX_GRAMMAR_SYSTEM_PROMPT,
+                    userPrompt: `ORIGINAL:\n${text}\n\nFIXED:`,
+                    stream: false
+                });
 
-        const data = await response.json();
-        return data.choices[0].message.content;
+                if (result.error) {
+                    this.errorObservable.next(result.error);
+                    return text; // Return original text on error
+                }
+
+                return result.text;
+            }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'An error occurred during enhancement';
+            this.errorObservable.next(errorMessage);
+            return text; // Return original text on error
+        }
     }
 }
 
