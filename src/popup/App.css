@@ -40,6 +40,136 @@
     min-height: 80px;
 }
 
+/* About Section */
+.about-section {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.version-info {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.version-info h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.version-info p {
+    margin: 8px 0 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.provider-badges {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.provider-badge {
+    height: 32px;
+    width: auto;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.provider-badge:hover {
+    opacity: 1;
+}
+
+.contributors {
+    margin-bottom: 24px;
+}
+
+.contributors h4 {
+    margin: 0 0 12px;
+    color: #333;
+    font-size: 16px;
+}
+
+.contributor-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.contributor-list a {
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.contributor-list a:hover {
+    text-decoration: underline;
+}
+
+.version-history {
+    margin-bottom: 24px;
+}
+
+.version-history h4 {
+    margin: 0 0 12px;
+    color: #333;
+    font-size: 16px;
+}
+
+.version-history ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 14px;
+}
+
+.version-history li {
+    margin-bottom: 8px;
+}
+
+.version-history strong {
+    color: #333;
+}
+
+.ai-credits {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.ai-credits h4 {
+    margin: 0 0 8px;
+    color: #333;
+    font-size: 16px;
+}
+
+.ai-credits p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.links a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+.separator {
+    color: #ccc;
+}
+
 /* Migration Status */
 .migration-status {
     text-align: center;
@@ -308,6 +438,34 @@
     align-items: center;
     gap: 8px;
     cursor: pointer;
+}
+
+/* Navigation */
+.nav-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.nav-tab {
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.nav-tab:hover {
+    color: #333;
+}
+
+.nav-tab.active {
+    color: #0066cc;
+    border-bottom-color: #0066cc;
 }
 
 @keyframes spin {

@@ -5,9 +5,13 @@ import { migrationService } from '../app/services/migration';
 import { ProviderSelector } from './components/ProviderSelector';
 import { ProviderSettings } from './components/ProviderSettings';
 import { ProviderTester } from './components/ProviderTester';
+import { AboutSection } from './components/AboutSection';
 import './App.css';
 
+type ActiveTab = 'settings' | 'about';
+
 function App() {
+    const [activeTab, setActiveTab] = useState<ActiveTab>('settings');
     const [providerConfig, setProviderConfig] = useState<ProviderConfig>({
         selectedProvider: 'openai',
         providers: {}
@@ -139,51 +143,72 @@ function App() {
     return (
         <div className="container">
             <div className="box">
-                <h2>Provider Configuration</h2>
-
-                {migrationStatus.error && (
-                    <div className="error-message">
-                        {migrationStatus.error}
-                    </div>
-                )}
-                
-                <ProviderSelector
-                    selectedProvider={providerConfig.selectedProvider}
-                    onProviderChange={handleProviderChange}
-                />
-
-                <div className="divider" />
-
-                <ProviderSettings
-                    providerId={providerConfig.selectedProvider}
-                    settings={providerConfig.providers[providerConfig.selectedProvider] || {
-                        token: '',
-                        settings: {}
-                    }}
-                    onSettingsChange={handleSettingsChange}
-                />
-
-                <div className="divider" />
-
-                <div className="global-settings">
-                    <label className="checkbox-label">
-                        <input
-                            type="checkbox"
-                            checked={translationEnabled}
-                            onChange={handleToggleTranslation}
-                        />
-                        Enable Translation
-                    </label>
+                <div className="nav-tabs">
+                    <button 
+                        className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('settings')}
+                    >
+                        Settings
+                    </button>
+                    <button 
+                        className={`nav-tab ${activeTab === 'about' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('about')}
+                    >
+                        About
+                    </button>
                 </div>
 
-                <div className="divider" />
+                {activeTab === 'settings' ? (
+                    <>
+                        <h2>Provider Configuration</h2>
 
-                <ProviderTester providerConfig={providerConfig} />
+                        {migrationStatus.error && (
+                            <div className="error-message">
+                                {migrationStatus.error}
+                            </div>
+                        )}
+                        
+                        <ProviderSelector
+                            selectedProvider={providerConfig.selectedProvider}
+                            onProviderChange={handleProviderChange}
+                        />
 
-                {migrationStatus.message && !migrationStatus.error && (
-                    <div className="success-message">
-                        {migrationStatus.message}
-                    </div>
+                        <div className="divider" />
+
+                        <ProviderSettings
+                            providerId={providerConfig.selectedProvider}
+                            settings={providerConfig.providers[providerConfig.selectedProvider] || {
+                                token: '',
+                                settings: {}
+                            }}
+                            onSettingsChange={handleSettingsChange}
+                        />
+
+                        <div className="divider" />
+
+                        <div className="global-settings">
+                            <label className="checkbox-label">
+                                <input
+                                    type="checkbox"
+                                    checked={translationEnabled}
+                                    onChange={handleToggleTranslation}
+                                />
+                                Enable Translation
+                            </label>
+                        </div>
+
+                        <div className="divider" />
+
+                        <ProviderTester providerConfig={providerConfig} />
+
+                        {migrationStatus.message && !migrationStatus.error && (
+                            <div className="success-message">
+                                {migrationStatus.message}
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <AboutSection />
                 )}
             </div>
         </div>

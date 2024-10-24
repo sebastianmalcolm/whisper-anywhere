@@ -94,7 +94,7 @@ export const providers: { [key: string]: ApiProvider } = {
         capabilities: {
             transcription: true,
             translation: true,
-            textCompletion: false
+            textCompletion: true  // Updated to true as Groq supports chat completions
         },
         models: {
             transcription: [
@@ -129,7 +129,8 @@ export const providers: { [key: string]: ApiProvider } = {
         },
         endpoints: {
             transcription: 'https://api.groq.com/openai/v1/audio/transcriptions',
-            translation: 'https://api.groq.com/openai/v1/audio/translations'
+            translation: 'https://api.groq.com/openai/v1/audio/translations',
+            textCompletion: 'https://api.groq.com/openai/v1/chat/completions'  // Added text completion endpoint
         },
         limitations: {
             maxFileSize: 25 * 1024 * 1024,
@@ -153,11 +154,16 @@ export const providers: { [key: string]: ApiProvider } = {
                 'Provide contextual information about audio type',
                 'Use same language as audio file',
                 'Denote proper spellings',
-                'Keep prompts concise and focused on style'
+                'Keep prompts concise and focused on style',
+                'Use pretty-printed JSON for JSON mode',
+                'Keep JSON prompts concise'
             ],
             restrictions: [
                 'Do not include commands',
-                'Do not include execution instructions'
+                'Do not include execution instructions',
+                'Do not use logprobs, logit_bias, or top_logprobs fields',
+                'Do not use message name field',
+                'N must equal 1 if supplied'
             ]
         }
     }

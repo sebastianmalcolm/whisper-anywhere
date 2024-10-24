@@ -1,14 +1,26 @@
 {
     "name": "whisper-anywhere",
-    "version": "1.2.7",
-    "description": "Chrome add-on enabling voice input with OpenAI Whisper",
+    "version": "2.0.0",
+    "description": "Voice-to-Text Anywhere in Chrome with AI Speech Recognition (OpenAI Whisper, Groq, and more).",
     "authors": [
-        "alireza29675",
+        "ordinath",
         "redocrepus",
-        "ordinath"
+        "alireza29675",
+        "sebastianmalcolm"
+    ],
+    "contributors": [
+        {
+            "name": "Cline",
+            "role": "AI Development Assistant"
+        },
+        {
+            "name": "Claude 3.5 Sonnet",
+            "role": "AI Development Assistant"
+        }
     ],
     "license": "MIT",
     "dependencies": {
+        "groq-sdk": "^0.7.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "rxjs": "^7.8.1",
