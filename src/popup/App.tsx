@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ProviderConfig } from '../app/types';
 import { configStore } from '../app/config';
+import { migrationService } from '../app/services/migration';
 import { ProviderSelector } from './components/ProviderSelector';
 import { ProviderSettings } from './components/ProviderSettings';
 import { ProviderTester } from './components/ProviderTester';
@@ -12,67 +13,108 @@ function App() {
         providers: {}
     });
     const [translationEnabled, setTranslationEnabled] = useState(false);
+    const [migrationStatus, setMigrationStatus] = useState<{
+        inProgress: boolean;
+        message?: string;
+        error?: string;
+    }>({ inProgress: false });
 
-    // Retrieve stored data
+    // Handle migration and configuration loading
     useEffect(() => {
-        const retrieveState = async () => {
-            const [config, translation] = await Promise.all([
-                configStore.providerConfig.get(),
-                configStore.enableTranslation.get()
-            ]);
+        const initializeApp = async () => {
+            try {
+                // Check if migration is needed
+                const needsMigration = await migrationService.checkMigrationNeeded();
+                
+                if (needsMigration) {
+                    setMigrationStatus({ inProgress: true, message: 'Starting migration...' });
+                    
+                    // Subscribe to migration progress
+                    const progressSubscription = migrationService.onProgress.subscribe(message => {
+                        setMigrationStatus(prev => ({ ...prev, message }));
+                    });
 
-            setProviderConfig(config);
-            setTranslationEnabled(translation);
-
-            // Handle legacy configuration if needed
-            const legacyToken = await configStore.token.get();
-            const legacyPrompt = await configStore.prompt.get();
-
-            if (legacyToken && !config.providers.openai?.token) {
-                setProviderConfig(prev => ({
-                    ...prev,
-                    providers: {
-                        ...prev.providers,
-                        openai: {
-                            token: legacyToken,
-                            settings: {
-                                prompt: legacyPrompt
-                            }
-                        }
+                    // Perform migration
+                    const result = await migrationService.migrate();
+                    
+                    if (result.success) {
+                        // Load the migrated configuration
+                        const migratedConfig = await configStore.providerConfig.get();
+                        setProviderConfig(migratedConfig);
+                        setMigrationStatus({
+                            inProgress: false,
+                            message: 'Migration completed successfully'
+                        });
+                    } else {
+                        setMigrationStatus({
+                            inProgress: false,
+                            error: result.message
+                        });
                     }
-                }));
+
+                    progressSubscription.unsubscribe();
+                } else {
+                    // Just load the current configuration
+                    const [config, translation] = await Promise.all([
+                        configStore.providerConfig.get(),
+                        configStore.enableTranslation.get()
+                    ]);
+
+                    setProviderConfig(config);
+                    setTranslationEnabled(translation);
+                }
+            } catch (error) {
+                setMigrationStatus({
+                    inProgress: false,
+                    error: error instanceof Error ? error.message : 'Failed to initialize'
+                });
             }
         };
 
-        retrieveState();
+        initializeApp();
     }, []);
 
-    const handleProviderChange = (providerId: string) => {
-        setProviderConfig(prev => ({
-            ...prev,
-            selectedProvider: providerId
-        }));
-        configStore.providerConfig.set({
+    const handleProviderChange = async (providerId: string) => {
+        const newConfig = {
             ...providerConfig,
             selectedProvider: providerId
-        });
+        };
+
+        // Validate the configuration
+        const errors = await migrationService.validateConfiguration(newConfig);
+        if (errors.length > 0) {
+            setMigrationStatus({
+                inProgress: false,
+                error: `Invalid configuration: ${errors.join(', ')}`
+            });
+            return;
+        }
+
+        setProviderConfig(newConfig);
+        await configStore.providerConfig.set(newConfig);
     };
 
-    const handleSettingsChange = (settings: any) => {
-        setProviderConfig(prev => ({
-            ...prev,
-            providers: {
-                ...prev.providers,
-                [prev.selectedProvider]: settings
-            }
-        }));
-        configStore.providerConfig.set({
+    const handleSettingsChange = async (settings: any) => {
+        const newConfig = {
             ...providerConfig,
             providers: {
                 ...providerConfig.providers,
                 [providerConfig.selectedProvider]: settings
             }
-        });
+        };
+
+        // Validate the configuration
+        const errors = await migrationService.validateConfiguration(newConfig);
+        if (errors.length > 0) {
+            setMigrationStatus({
+                inProgress: false,
+                error: `Invalid configuration: ${errors.join(', ')}`
+            });
+            return;
+        }
+
+        setProviderConfig(newConfig);
+        await configStore.providerConfig.set(newConfig);
     };
 
     const handleToggleTranslation = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,10 +122,30 @@ function App() {
         configStore.enableTranslation.set(event.target.checked);
     };
 
+    if (migrationStatus.inProgress) {
+        return (
+            <div className="container">
+                <div className="box migration-status">
+                    <h2>Migrating Configuration</h2>
+                    <div className="migration-progress">
+                        <div className="spinner"></div>
+                        <p>{migrationStatus.message}</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="container">
             <div className="box">
                 <h2>Provider Configuration</h2>
+
+                {migrationStatus.error && (
+                    <div className="error-message">
+                        {migrationStatus.error}
+                    </div>
+                )}
                 
                 <ProviderSelector
                     selectedProvider={providerConfig.selectedProvider}
@@ -117,6 +179,12 @@ function App() {
                 <div className="divider" />
 
                 <ProviderTester providerConfig={providerConfig} />
+
+                {migrationStatus.message && !migrationStatus.error && (
+                    <div className="success-message">
+                        {migrationStatus.message}
+                    </div>
+                )}
             </div>
         </div>
     );
