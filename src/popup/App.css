@@ -1,6 +1,6 @@
 /* Base styles */
 :root {
-    --popup-min-width: 400px;  /* 12% wider than original */
+    --popup-min-width: 400px;
     --popup-max-width: 600px;
     --popup-padding: 16px;
 }
@@ -9,7 +9,7 @@
     min-width: var(--popup-min-width);
     max-width: var(--popup-max-width);
     margin: 0 auto;
-    height: 100vh;
+    height: 100%;
     display: flex;
     flex-direction: column;
 }
@@ -20,7 +20,7 @@
     background: var(--background-color, #ffffff);
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Prevent default scrollbar */
+    overflow: hidden;
 }
 
 /* Navigation tabs */
@@ -49,6 +49,47 @@
 .nav-tab.active {
     color: var(--active-color, #0066cc);
     border-bottom: 2px solid var(--active-color, #0066cc);
+}
+
+/* Provider selection styling */
+.provider-option {
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.provider-option:hover {
+    border-color: var(--hover-border-color, #0066cc);
+    background: var(--hover-bg, #f8f9fa);
+}
+
+.provider-option.selected {
+    border-color: var(--selected-border-color, #0066cc);
+    background: var(--selected-bg, #f0f7ff);
+}
+
+.provider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.provider-capabilities {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.capability-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    background: var(--badge-bg, #e9ecef);
+    color: var(--badge-color, #495057);
 }
 
 /* Responsive design */
@@ -119,4 +160,41 @@
     height: 1px;
     background: var(--border-color, #e0e0e0);
     margin: 16px 0;
+}
+
+/* Global settings */
+.global-settings {
+    padding: 16px;
+    background: var(--settings-bg, #f8f9fa);
+    border-radius: 8px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+/* Provider metrics */
+.provider-metrics {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric span:first-child {
+    color: var(--metric-label, #666);
+    font-size: 0.9rem;
+}
+
+.metric span:last-child {
+    font-weight: 500;
+    color: var(--metric-value, #333);
 }

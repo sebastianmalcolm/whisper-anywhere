@@ -32,7 +32,7 @@ export const AboutSection: React.FC = () => {
             </section>
 
             <div className="expandable-content">
-                <Accordion title="Recent Changes" defaultExpanded>
+                <Accordion title="Recent Changes">
                     <div className="version-history">
                         <ul>
                             <li>
