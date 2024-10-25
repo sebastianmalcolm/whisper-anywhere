@@ -36,6 +36,22 @@ export const AboutSection: React.FC = () => {
                     <div className="version-history">
                         <ul>
                             <li>
+                                <strong>2.0.2</strong>
+                                <ul>
+                                    <li>Enhanced About tab with expandable sections</li>
+                                    <li>Improved responsive design</li>
+                                    <li>Added detailed provider attributions</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>2.0.1</strong>
+                                <ul>
+                                    <li>Added provider capability indicators</li>
+                                    <li>Enhanced configuration testing</li>
+                                    <li>Improved error handling</li>
+                                </ul>
+                            </li>
+                            <li>
                                 <strong>2.0.0</strong>
                                 <ul>
                                     <li>Added support for multiple AI providers</li>
@@ -45,10 +61,10 @@ export const AboutSection: React.FC = () => {
                                 </ul>
                             </li>
                             <li>
-                                <strong>1.2.7</strong>
+                              <strong>1.2.7</strong>
                                 <ul>
-                                    <li>Performance improvements</li>
-                                    <li>Bug fixes</li>
+                                  <li>Performance improvements</li>
+                                  <li>Bug fixes</li>
                                 </ul>
                             </li>
                         </ul>
