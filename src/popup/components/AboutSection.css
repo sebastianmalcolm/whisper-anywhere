@@ -1,0 +1,91 @@
+.about-section {
+    padding: 16px;
+}
+
+.version-info {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.version-info h3 {
+    margin: 0 0 8px;
+    color: var(--heading-color, #333);
+}
+
+.version-info p {
+    margin: 0;
+    color: var(--text-color, #666);
+}
+
+.provider-attribution {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.provider-attribution h4 {
+    margin: 0 0 12px;
+    color: var(--heading-color, #333);
+}
+
+.contributor-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.contributor-list a {
+    color: var(--link-color, #0066cc);
+    text-decoration: none;
+}
+
+.contributor-list a:hover {
+    text-decoration: underline;
+}
+
+.version-history ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.version-history ul ul {
+    padding-left: 20px;
+    margin: 8px 0;
+}
+
+.version-history li {
+    margin-bottom: 16px;
+}
+
+.version-history li:last-child {
+    margin-bottom: 0;
+}
+
+.version-history strong {
+    color: var(--version-color, #333);
+}
+
+.ai-credits {
+    text-align: center;
+    color: var(--text-color, #666);
+}
+
+.links {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.links a {
+    color: var(--link-color, #0066cc);
+    text-decoration: none;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+.separator {
+    margin: 0 8px;
+    color: var(--separator-color, #ccc);
+}
