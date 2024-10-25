@@ -61,10 +61,10 @@ export const AboutSection: React.FC = () => {
                                 </ul>
                             </li>
                             <li>
-                              <strong>1.2.7</strong>
+                                <strong>1.2.7</strong>
                                 <ul>
-                                  <li>Performance improvements</li>
-                                  <li>Bug fixes</li>
+                                    <li>Performance improvements</li>
+                                    <li>Bug fixes</li>
                                 </ul>
                             </li>
                         </ul>
