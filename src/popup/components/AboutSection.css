@@ -1,37 +1,57 @@
 .about-section {
-    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+    max-height: 100vh;
 }
 
-.version-info {
+.about-header {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 8px;
 }
 
-.version-info h3 {
-    margin: 0 0 8px;
-    color: var(--heading-color, #333);
-}
-
-.version-info p {
+.about-header h2 {
     margin: 0;
+    color: var(--heading-color, #333);
+    font-size: 1.5rem;
+}
+
+.version {
+    display: inline-block;
+    margin-top: 4px;
+    color: var(--version-color, #666);
+    font-size: 0.9rem;
+}
+
+.tagline {
+    margin: 4px 0 0;
     color: var(--text-color, #666);
+    font-size: 1rem;
 }
 
 .provider-attribution {
-    margin-bottom: 24px;
+    margin: 8px 0;
     text-align: center;
 }
 
 .provider-attribution h4 {
-    margin: 0 0 12px;
+    margin: 0 0 8px;
     color: var(--heading-color, #333);
+    font-size: 1rem;
+}
+
+.expandable-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px; /* Space for potential scrollbar */
 }
 
 .contributor-list {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    padding: 8px 0;
+    padding: 4px 0;
 }
 
 .contributor-list a {
@@ -51,11 +71,11 @@
 
 .version-history ul ul {
     padding-left: 20px;
-    margin: 8px 0;
+    margin: 4px 0;
 }
 
 .version-history li {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .version-history li:last-child {
@@ -69,23 +89,44 @@
 .ai-credits {
     text-align: center;
     color: var(--text-color, #666);
+    padding: 4px 0;
 }
 
-.links {
-    margin-top: 24px;
+.about-footer {
+    margin-top: auto;
+    padding-top: 8px;
     text-align: center;
+    border-top: 1px solid var(--border-color, #e0e0e0);
 }
 
-.links a {
+.about-footer a {
     color: var(--link-color, #0066cc);
     text-decoration: none;
 }
 
-.links a:hover {
+.about-footer a:hover {
     text-decoration: underline;
 }
 
 .separator {
     margin: 0 8px;
     color: var(--separator-color, #ccc);
+}
+
+/* Ensure content is scrollable only when necessary */
+.about-section::-webkit-scrollbar {
+    width: 8px;
+}
+
+.about-section::-webkit-scrollbar-track {
+    background: var(--scrollbar-track, #f1f1f1);
+}
+
+.about-section::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb, #888);
+    border-radius: 4px;
+}
+
+.about-section::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover, #555);
 }
