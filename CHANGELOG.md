@@ -2,7 +2,40 @@
 
 All notable changes to the Whisper Anywhere Chrome extension will be documented in this file.
 
-## [2.0.0] - 2024-03-25
+## [2.0.2] - 2024-10-25
+
+### Added
+- Enhanced About tab with expandable sections
+- Image carousel for AI provider logos
+- Detailed provider descriptions and attributions
+- Responsive popup design (400px-520px width)
+
+### Changed
+- Improved UI layout and typography
+- Enhanced package metadata and documentation
+- Updated manifest configuration
+- Optimized content organization
+
+### Technical Improvements
+- Fixed component export/import structure
+- Added responsive design breakpoints
+- Improved bundle configuration
+- Enhanced type definitions
+
+## [2.0.1] - 2024-10-24
+
+### Added
+- Provider capability indicators
+- Real-time configuration testing
+- Enhanced error messages
+
+### Fixed
+- Provider selection styling
+- Configuration validation
+- Token handling
+- Error recovery
+
+## [2.0.0] - 2024-10-23
 
 Major update adding multi-provider support and comprehensive improvements.
 

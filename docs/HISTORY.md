@@ -21,12 +21,49 @@
 - Enhanced text processing features
 - Improved UI/UX
 
-### Multi-Provider Support (2024-03)
+### Multi-Provider Support (2024-10)
 - Led by Sebastian Malcolm
 - Integration of multiple AI providers
 - Addition of Groq support
 - Enhanced configuration system
 - Comprehensive documentation
+
+### Enhanced UI & Documentation (2024-10-25)
+- Improved About tab with expandable sections
+- Added provider carousel display
+- Enhanced responsive design
+- Comprehensive version history
+- Detailed provider attributions
+
+## Version History
+
+### 2.0.2 (2024-10-25)
+- Enhanced About tab with expandable sections
+- Improved responsive design
+- Added detailed provider attributions
+- Updated documentation and metadata
+
+### 2.0.1 (2024-10-24)
+- Added provider capability indicators
+- Enhanced configuration testing
+- Improved error handling
+- Fixed provider selection UI
+
+### 2.0.0 (2024-10-23)
+- Multi-provider support
+- Groq integration
+- Enhanced UI
+- Comprehensive documentation
+
+### 1.2.7 (2024-10-01)
+- Bug fixes
+- Performance improvements
+- Dependency updates
+
+### 1.0.0 (2024-02-15)
+- Initial stable release
+- OpenAI Whisper integration
+- Basic voice-to-text functionality
 
 ## Contributors
 
@@ -63,24 +100,6 @@
   - Implementation planning
   - Code generation
   - Documentation generation
-
-## Version History
-
-### 2.0.0 (2024-03-25)
-- Multi-provider support
-- Groq integration
-- Enhanced UI
-- Comprehensive documentation
-
-### 1.2.7 (2024-03-01)
-- Bug fixes
-- Performance improvements
-- Dependency updates
-
-### 1.0.0 (2024-02-15)
-- Initial stable release
-- OpenAI Whisper integration
-- Basic voice-to-text functionality
 
 ## Technology Evolution
 
